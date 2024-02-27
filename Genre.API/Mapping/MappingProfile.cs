@@ -1,8 +1,4 @@
-﻿using AutoMapper;
-using Genre.API.Data.Entities;
-using Genre.API.Models.Requests;
-
-namespace Genre.API.Mapping
+﻿namespace Genre.API.Mapping
 {
     public class MappingProfile : Profile
     {

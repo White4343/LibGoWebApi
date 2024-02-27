@@ -1,0 +1,10 @@
+﻿global using Genre.API.Data;
+global using Genre.API.Repositories;
+global using Genre.API.Repositories.Interfaces;
+global using Genre.API.Services;
+global using Genre.API.Services.Interfaces;
+global using Microsoft.EntityFrameworkCore;
+global using AutoMapper;
+global using Genre.API.Data.Entities;
+global using Genre.API.Models.Requests;
+global using SendGrid.Helpers.Errors.Model;

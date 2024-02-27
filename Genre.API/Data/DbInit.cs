@@ -1,7 +1,4 @@
-﻿using Genre.API.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-
-namespace Genre.API.Data
+﻿namespace Genre.API.Data
 {
     public class DbInit
     {

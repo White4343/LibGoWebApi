@@ -1,14 +1,12 @@
-﻿using Genre.API.Models.Requests;
-using Genre.API.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SendGrid.Helpers.Errors.Model;
 
 namespace Genre.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class GenresController : ControllerBase
     {
         private readonly IGenresService _genresService;

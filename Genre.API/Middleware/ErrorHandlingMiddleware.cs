@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SendGrid.Helpers.Errors.Model;
 
 namespace Genre.API.Middleware
 {
@@ -38,7 +37,7 @@ namespace Genre.API.Middleware
             }
         }
 
-        private async Task<HttpContext> CreateContext (HttpContext context, Exception e, int statusCode)
+        private async Task CreateContext (HttpContext context, Exception e, int statusCode)
         {
             _logger.LogError(e, e.Message);
 

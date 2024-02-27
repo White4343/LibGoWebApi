@@ -1,10 +1,4 @@
-﻿using AutoMapper;
-using Genre.API.Data.Entities;
-using Genre.API.Models.Requests;
-using Genre.API.Repositories.Interfaces;
-using Genre.API.Services.Interfaces;
-
-namespace Genre.API.Services
+﻿namespace Genre.API.Services
 {
     public class GenresService : IGenresService
     {

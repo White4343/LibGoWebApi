@@ -1,6 +1,4 @@
 ﻿using System.Net.Http.Headers;
-using Genre.API.Data.Entities;
-using Genre.API.Services.Interfaces;
 using SendGrid.Helpers.Errors.Model;
 
 namespace Genre.API.Services
