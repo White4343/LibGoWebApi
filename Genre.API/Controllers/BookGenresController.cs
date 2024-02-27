@@ -30,77 +30,32 @@ namespace Genre.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var userId = GetUserId();
+            var userId = GetUserId();
 
-                var createdBookGenre =
-                    await _bookGenresService.CreateBookGenreAsync(bookGenre, userId);
+            var createdBookGenre =
+                await _bookGenresService.CreateBookGenreAsync(bookGenre, userId);
 
-                return Ok(createdBookGenre);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                return Unauthorized(e.Message);
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid user id");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error creating book genre");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(createdBookGenre);
+            
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookGenreByIdAsync(int id)
         {
-            try
-            {
-                var bookGenre = await _bookGenresService.GetBookGenreByIdAsync(id);
 
-                return Ok(bookGenre);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error getting book genre");
+            var bookGenre = await _bookGenresService.GetBookGenreByIdAsync(id);
 
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(bookGenre);
         }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetBookGenresAsync()
         {
-            try
-            {
-                var bookGenres = await _bookGenresService.GetBookGenresAsync();
+            var bookGenres = await _bookGenresService.GetBookGenresAsync();
 
-                return Ok(bookGenres);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error getting book genres");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(bookGenres);
         }
 
         [HttpPut]
@@ -111,51 +66,22 @@ namespace Genre.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                int userId = GetUserId();
+            int userId = GetUserId();
 
-                var updatedBookGenre = await _bookGenresService.UpdateBookGenreAsync(bookGenre, userId);
+            var updatedBookGenre = await _bookGenresService.UpdateBookGenreAsync(bookGenre, userId);
 
-                return Ok(updatedBookGenre);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error updating book genre");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(updatedBookGenre);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBookGenreAsync(int id)
         {
-            try
-            {
-                int userId = GetUserId();
 
-                var deleted = await _bookGenresService.DeleteBookGenreAsync(id, userId);
+            int userId = GetUserId();
 
-                return Ok(deleted);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                return Unauthorized(e.Message);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error deleting book genre");
+            var deleted = await _bookGenresService.DeleteBookGenreAsync(id, userId);
 
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(deleted);
         }
 
         private int GetUserId()
@@ -165,3 +91,4 @@ namespace Genre.API.Controllers
             return int.Parse(userId);
         }
     }
+}
