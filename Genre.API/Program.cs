@@ -1,4 +1,5 @@
 using Genre.API.Data;
+using Genre.API.Middleware;
 using Genre.API.Repositories;
 using Genre.API.Repositories.Interfaces;
 using Genre.API.Services;
@@ -140,6 +141,8 @@ namespace Genre.API
                     setup.OAuthAppName("Genres Swagger UI");
                 });
             }
+
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");

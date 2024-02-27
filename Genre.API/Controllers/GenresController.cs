@@ -29,62 +29,26 @@ namespace Genre.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var createdGenre = await _genresService.CreateGenreAsync(genre);
-
-                return Ok(createdGenre);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error creating genre");
-
-                return StatusCode(500, "Internal server error");
-            }
+            var createdGenre = await _genresService.CreateGenreAsync(genre);
+            return Ok(createdGenre);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGenreByIdAsync(int id)
         {
-            try
-            {
-                var genre = await _genresService.GetGenreByIdAsync(id);
+            var genre = await _genresService.GetGenreByIdAsync(id);
 
-                return Ok(genre);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error getting genre");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(genre);
         }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetGenresAsync()
         {
-            try
-            {
-                var genres = await _genresService.GetGenresAsync();
+            var genres = await _genresService.GetGenresAsync();
 
-                return Ok(genres);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error getting genres");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(genres);
         }
 
         [Authorize(Policy = "Genres.Admin")]
@@ -96,44 +60,18 @@ namespace Genre.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var updatedGenre = await _genresService.UpdateGenreAsync(genre);
+            var updatedGenre = await _genresService.UpdateGenreAsync(genre);
 
-                return Ok(updatedGenre);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error updating genre");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(updatedGenre);
         }
 
         [Authorize(Policy = "Genres.Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenreAsync(int id)
-        {
-            try
-            {
-                var deleted = await _genresService.DeleteGenreAsync(id);
+        { 
+            var deleted = await _genresService.DeleteGenreAsync(id);
 
-                return Ok(deleted);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error deleting genre");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(deleted);
         }
     }
 }
