@@ -1,6 +1,4 @@
-﻿using Genre.API.Data.Entities;
-
-namespace Genre.API.Services.Interfaces
+﻿namespace Genre.API.Services.Interfaces
 {
     public interface IBookService
     {

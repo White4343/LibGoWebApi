@@ -1,16 +1,12 @@
-﻿using Genre.API.Models.Requests;
-using Genre.API.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SendGrid.Helpers.Errors.Model;
 using System.Security.Claims;
-using Genre.API.Data.Entities;
 
 namespace Genre.API.Controllers
 {
     [Authorize(Policy = "BookGenres.Client")]
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class BookGenresController : ControllerBase
     {
         private readonly IBookGenresService _bookGenresService;

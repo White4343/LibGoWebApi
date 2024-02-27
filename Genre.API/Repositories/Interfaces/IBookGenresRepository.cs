@@ -1,6 +1,4 @@
-﻿using Genre.API.Data.Entities;
-
-namespace Genre.API.Repositories.Interfaces
+﻿namespace Genre.API.Repositories.Interfaces
 {
     public interface IBookGenresRepository
     {

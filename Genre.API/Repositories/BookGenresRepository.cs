@@ -1,11 +1,4 @@
-﻿using AutoMapper;
-using Genre.API.Data;
-using Genre.API.Data.Entities;
-using Genre.API.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Errors.Model;
-
-namespace Genre.API.Repositories
+﻿namespace Genre.API.Repositories
 {
     public class BookGenresRepository : IBookGenresRepository
     {
