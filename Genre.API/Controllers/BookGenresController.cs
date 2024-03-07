@@ -54,6 +54,24 @@ namespace Genre.API.Controllers
             return Ok(bookGenres);
         }
 
+        [AllowAnonymous]
+        [HttpGet("book/{bookId}")]
+        public async Task<IActionResult> GetBookGenresByBookIdAsync(int bookId)
+        {
+            var bookGenres = await _bookGenresService.GetBookGenresByBookIdAsync(bookId);
+
+            return Ok(bookGenres);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("genre/{genreId}")]
+        public async Task<IActionResult> GetBookGenresByGenreIdAsync(int genreId)
+        {
+            var bookGenres = await _bookGenresService.GetBookGenresByGenreIdAsync(genreId);
+
+            return Ok(bookGenres);
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateBookGenreAsync([FromBody] UpdateBookGenresRequest bookGenre)
         {
@@ -76,6 +94,16 @@ namespace Genre.API.Controllers
             int userId = GetUserId();
 
             var deleted = await _bookGenresService.DeleteBookGenreAsync(id, userId);
+
+            return Ok(deleted);
+        }
+
+        [HttpDelete("book/{bookId}")]
+        public async Task<IActionResult> DeleteBookGenresByBookIdAsync(int bookId)
+        {
+            int userId = GetUserId();
+
+            var deleted = await _bookGenresService.DeleteBookGenresByBookIdAsync(bookId, userId);
 
             return Ok(deleted);
         }

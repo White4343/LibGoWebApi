@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using SendGrid.Helpers.Errors.Model;
 
-namespace Genre.API.Middleware
+namespace Book.API.Middleware
 {
     public class ErrorHandlingMiddleware 
     {
