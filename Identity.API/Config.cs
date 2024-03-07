@@ -40,6 +40,24 @@ public static class Config
                     "bookgenres.admin",
                     "bookgenres.client"
                 }
+            },
+            new Client
+            {
+                ClientId = "booksswaggerui",
+                ClientName = "Books Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+
+                RedirectUris = {WebApiLinks.BooksApi + "/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = {WebApiLinks.BooksApi + "/swagger/" },
+
+                AllowedScopes =
+                {
+                    "books.admin",
+                    "books.client",
+                    "bookgenres.admin",
+                    "bookgenres.client"
+                }
             }
         };
 }

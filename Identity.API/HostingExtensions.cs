@@ -15,6 +15,7 @@ internal static class HostingExtensions
             .AddEnvironmentVariables().Build();
 
         WebApiLinks.GenresApi = configuration["GenresApi"];
+        WebApiLinks.BooksApi = configuration["BooksApi"];
 
         builder.Services.AddRazorPages();
 
