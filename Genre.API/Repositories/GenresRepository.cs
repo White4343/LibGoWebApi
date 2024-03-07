@@ -16,13 +16,21 @@
 
         public async Task<Genres> CreateOrderAsync(Genres genre)
         {
-            var genreToCreate = await _context.Genres.AddAsync(genre);
+            try
+            {
+                var genreToCreate = await _context.Genres.AddAsync(genre);
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Genre {genre.Name} with id {genre.Id} is created");
+                _logger.LogInformation($"Genre {genre.Name} with id {genre.Id} is created");
 
-            return genreToCreate.Entity;
+                return genreToCreate.Entity;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<Genres> GetGenreByIdAsync(int id)

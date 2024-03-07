@@ -1,4 +1,6 @@
-﻿namespace Genre.API.Services
+﻿using Genre.API.Models.Responses;
+
+namespace Genre.API.Services
 {
     public class BookGenresService : IBookGenresService
     {
@@ -22,11 +24,11 @@
         {
             try
             {
-                await BookExists(bookGenre.BookId);
+                var book = await BookExists(bookGenre.BookId);
 
                 await GenreExists(bookGenre.GenreId);
 
-                await IsBookAuthor(bookGenre.BookId, userId);
+                await IsBookAuthor(book.UserId, userId);
 
                 var bookGenreToCreate = _mapper.Map<BookGenres>(bookGenre);
 
@@ -71,6 +73,56 @@
             }
         }
 
+        public async Task<GetGenresByBookIdResponse> GetBookGenresByBookIdAsync(int bookId)
+        {
+            try
+            {
+                var bookGenres = await _bookGenresRepository.GetBookGenresByBookIdAsync(bookId);
+
+                var genres = await _genresService.GetGenresAsync();
+
+                // need to get all genres and then filter out the ones that are not in the bookGenres list
+                
+                genres = genres.Where(g => bookGenres.Any(bg => bg.GenreId == g.Id));
+
+                var result = new GetGenresByBookIdResponse()
+                {
+                    BookId = bookId,
+                    Genres = genres
+                };
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task<GetBooksByGenreIdResponse> GetBookGenresByGenreIdAsync(int genreId)
+        {
+            try
+            {
+                var bookGenres = await _bookGenresRepository.GetBookGenresByGenreIdAsync(genreId);
+
+                var genre = await _genresService.GetGenreByIdAsync(genreId);
+
+                var result = new GetBooksByGenreIdResponse()
+                {
+                    Genre = genre,
+                    Books = bookGenres
+                };
+                
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<BookGenres> UpdateBookGenreAsync(UpdateBookGenresRequest bookGenre, int userId)
         {
             try
@@ -98,9 +150,30 @@
         {
             try
             {
-                await IsBookAuthor(id, userId);
+                var book = await BookExists(id);
+
+                await IsBookAuthor(book.UserId, userId);
 
                 var deleted = await _bookGenresRepository.DeleteBookGenreAsync(id);
+
+                return deleted;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteBookGenresByBookIdAsync(int bookId, int userId)
+        {
+            try
+            {
+                var book = await BookExists(bookId);
+
+                await IsBookAuthor(book.UserId, userId);
+
+                var deleted = await _bookGenresRepository.DeleteBookGenresByBookIdAsync(bookId);
 
                 return deleted;
             }
@@ -138,10 +211,10 @@
                 throw;
             }
         }
-
-        private async Task IsBookAuthor(int bookId, int userId)
+        
+        private async Task IsBookAuthor(int bookUserId, int userId)
         {
-            if (bookId == userId) 
+            if (bookUserId == userId) 
                 return;
             
             throw new UnauthorizedAccessException("You are not the author of this book");

@@ -16,11 +16,19 @@
 
         public async Task<Genres> CreateGenreAsync(CreateGenresRequest genre)
         {
-            var genreToCreate = _mapper.Map<Genres>(genre);
+            try
+            {
+                var genreToCreate = _mapper.Map<Genres>(genre);
 
-            var createdGenre = await _genresRepository.CreateOrderAsync(genreToCreate);
+                var createdGenre = await _genresRepository.CreateOrderAsync(genreToCreate);
 
-            return createdGenre;
+                return createdGenre;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<Genres> GetGenreByIdAsync(int id)

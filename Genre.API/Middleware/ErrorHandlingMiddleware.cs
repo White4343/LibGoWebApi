@@ -47,7 +47,7 @@ namespace Genre.API.Middleware
             });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
-            await context.Response.WriteAsync(e.Message);
+            await context.Response.WriteAsync(result);
         }
     }
 }
