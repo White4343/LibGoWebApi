@@ -11,6 +11,7 @@ namespace Book.API.Services.Interfaces
         Task<Books> GetBookByIdAsync(int id);
         Task<GetBookByPageResponse> GetBookPageByIdAsync(int bookId);
         Task<GetBooksByGenreResponse> GetGenreBooksPageByIdAsync(int genreId);
+        Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id);
         Task<IEnumerable<Books>> GetBooksAsync();
         Task<Books> UpdateBookAsync(UpdateBooksRequest book, int userId);
         Task<bool> DeleteBookAsync(int id, int userId);

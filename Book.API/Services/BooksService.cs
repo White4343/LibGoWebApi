@@ -109,6 +109,21 @@ namespace Book.API.Services
             }
         }
 
+        public async Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id)
+        {
+            try
+            {
+                var books = await _booksRepository.GetBooksByUserIdAsync(id);
+
+                return books;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<Books>> GetBooksAsync()
         {
             try

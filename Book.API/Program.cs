@@ -50,6 +50,16 @@ namespace Book.API
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim("scope", "books.client");
                 });
+                options.AddPolicy("Comments.Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "comments.Admin");
+                });
+                options.AddPolicy("Comments.Client", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "Comments.client");
+                });
             });
 
             builder.Services.AddAutoMapper(typeof(Program));
@@ -58,6 +68,9 @@ namespace Book.API
             builder.Services.AddScoped<IBooksRepository, BooksRepository>();
             builder.Services.AddScoped<IBooksService, BooksService>();
             builder.Services.AddScoped<IGenresService, GenresService>();
+
+            builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
+            builder.Services.AddScoped<ICommentsService, CommentsService>();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));
@@ -95,6 +108,8 @@ namespace Book.API
                             {
                                 { "books.admin", "Admin Books API" },
                                 { "books.client", "Client Books API" },
+                                { "comments.admin", "Admin Comments API" },
+                                { "comments.client", "Client Comments API" },
                             }
                         }
                     }
@@ -111,7 +126,7 @@ namespace Book.API
                                 Type = ReferenceType.SecurityScheme
                             }
                         },
-                        new[] { "books.admin", "books.client" }
+                        new[] { "books.admin", "books.client", "comments.admin", "comments.client" }
                     }
                 });
             });

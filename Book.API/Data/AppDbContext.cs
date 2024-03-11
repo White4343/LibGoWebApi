@@ -11,10 +11,12 @@ namespace Book.API.Data
         }
 
         public DbSet<Books> Books { get; set; }
-
+        public DbSet<Comments> Comments { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BooksEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new CommentsEntityConfiguration());
         }
     }
 }

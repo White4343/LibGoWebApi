@@ -3,6 +3,7 @@ using Book.API.Models.Requests;
 using Book.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Book.API.Controllers
 {
@@ -30,7 +31,9 @@ namespace Book.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createdBook = await _booksService.CreateBookAsync(book, 1);
+            int userId = GetUserId();
+
+            var createdBook = await _booksService.CreateBookAsync(book, userId);
             return Ok(createdBook);
         }
 
@@ -70,6 +73,15 @@ namespace Book.API.Controllers
             return Ok(books);
         }
 
+        [AllowAnonymous]
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetBooksByUserIdAsync(int userId)
+        {
+            var books = await _booksService.GetBooksByUserIdAsync(userId);
+
+            return Ok(books);
+        }
+
         [Authorize(Policy = "Books.Client")]
         [HttpPut]
         public async Task<IActionResult> UpdateBookAsync([FromBody] UpdateBooksRequest book)
@@ -79,7 +91,9 @@ namespace Book.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updatedBook = await _booksService.UpdateBookAsync(book, 1);
+            int userId = GetUserId();
+
+            var updatedBook = await _booksService.UpdateBookAsync(book, userId);
             return Ok(updatedBook);
         }
 
@@ -87,9 +101,18 @@ namespace Book.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBookAsync(int id)
         {
-            var deleted = await _booksService.DeleteBookAsync(id, 1);
+            int userId = GetUserId();
+
+            var deleted = await _booksService.DeleteBookAsync(id, userId);
 
             return Ok(deleted);
+        }
+
+        private int GetUserId()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return int.Parse(userId);
         }
     }
 }
