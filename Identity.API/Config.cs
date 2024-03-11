@@ -16,8 +16,13 @@ public static class Config
         {
             new ApiScope("genres.admin", "Admin Genres API"),
             new ApiScope("genres.client", "Client Genres API"),
-            new ApiScope("bookgenres.admin", "admin BookGenres API"),
+            new ApiScope("bookgenres.admin", "Admin BookGenres API"),
             new ApiScope("bookgenres.client", "Client BookGenres API"),
+            new ApiScope("books.client", "Client Books API"),
+            new ApiScope("books.admin", "Admin Books API"),
+            new ApiScope("comments.client", "Client Comments API"),
+            new ApiScope("comments.admin", "Admin Comments API"),
+
         };
 
     public static IEnumerable<Client> Clients =>
@@ -56,7 +61,9 @@ public static class Config
                     "books.admin",
                     "books.client",
                     "bookgenres.admin",
-                    "bookgenres.client"
+                    "bookgenres.client",
+                    "comments.client",
+                    "comments.admin"
                 }
             }
         };
