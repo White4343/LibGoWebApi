@@ -4,6 +4,7 @@ using Book.API.Models.Dtos;
 using Book.API.Models.Requests;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using FluentValidation;
 using SendGrid.Helpers.Errors.Model;
 
 namespace Book.API.Services
@@ -14,14 +15,16 @@ namespace Book.API.Services
         private readonly IBooksService _booksService;
         private readonly ILogger<CommentsService> _logger;
         private readonly IMapper _mapper;
+        private readonly IValidator<Comments> _validator;
 
         public CommentsService(ICommentsRepository commentsRepository, IBooksService booksService,
-            ILogger<CommentsService> logger, IMapper mapper)
+            ILogger<CommentsService> logger, IMapper mapper, IValidator<Comments> validator)
         {
             _commentsRepository = commentsRepository;
             _booksService = booksService;
             _logger = logger;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<CommentsDto> CreateCommentAsync(CreateCommentsRequest comment, int userId)
@@ -36,6 +39,13 @@ namespace Book.API.Services
                     BookId = comment.BookId,
                     UserId = userId
                 };
+
+                var validationResult = await _validator.ValidateAsync(commentToCreate);
+
+                if (!validationResult.IsValid)
+                {
+                    throw new ValidationException(validationResult.Errors);
+                }
 
                 var createdComment = await _commentsRepository.CreateCommentAsync(commentToCreate);
 
@@ -106,6 +116,13 @@ namespace Book.API.Services
                     BookId = comment.BookId,
                     UserId = userId
                 };
+
+                var validationResult = await _validator.ValidateAsync(commentToUpdate);
+
+                if (!validationResult.IsValid)
+                {
+                    throw new ValidationException(validationResult.Errors);
+                }
 
                 var updatedComment = await _commentsRepository.UpdateCommentAsync(commentToUpdate);
 
