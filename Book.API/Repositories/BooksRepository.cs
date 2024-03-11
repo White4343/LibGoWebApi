@@ -90,6 +90,18 @@ namespace Book.API.Repositories
             return books;
         }
 
+        public async Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id)
+        {
+            var books = await _context.Books.Where(b => b.UserId == id).ToListAsync();
+
+            if (books == null || books.Count == 0)
+            {
+                throw new NotFoundException($"Books for user with id {id} not found.");
+            }
+
+            return books;
+        }
+
         public async Task<Books> UpdateBookAsync(Books book)
         {
             try

@@ -17,6 +17,23 @@ namespace Book.API.Data
             };
         }
 
+        private static IEnumerable<Comments> GetPreconfiguredComments()
+        {
+            return new List<Comments>
+            {
+                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 }
+            };
+        }
+
         public static async Task InitializeAsync(AppDbContext context)
         {
             await context.Database.EnsureCreatedAsync();
@@ -24,8 +41,14 @@ namespace Book.API.Data
             if (!await context.Books.AnyAsync())
             {
                 await context.Books.AddRangeAsync(GetPreconfiguredBooks());
-                await context.SaveChangesAsync();
             }
+
+            if (!await context.Comments.AnyAsync())
+            {
+                await context.Comments.AddRangeAsync(GetPreconfiguredComments());
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

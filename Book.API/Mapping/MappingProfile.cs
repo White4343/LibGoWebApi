@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
+using Book.API.Models.Dtos;
 using Book.API.Models.Requests;
 
 namespace Book.API.Mapping
@@ -13,6 +14,9 @@ namespace Book.API.Mapping
 
             CreateMap<UpdateBooksRequest, Books>();
             CreateMap<Books, UpdateBooksRequest>();
+
+            CreateMap<Comments, CommentsDto>();
+            CreateMap<CommentsDto, Comments>();
         }
     }
 }

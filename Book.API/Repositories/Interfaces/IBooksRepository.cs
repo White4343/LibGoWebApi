@@ -9,6 +9,7 @@ namespace Book.API.Repositories.Interfaces
         Task<Books> GetBookByIdAsync(int id);
         Task<IEnumerable<Books>> GetBooksAsync();
         Task<IEnumerable<Books>> GetBooksByGenreAsync(IEnumerable<BookGenres> bookGenres);
+        Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id);
         Task<Books> UpdateBookAsync(Books book);
         Task<bool> DeleteBookAsync(int id);
     }
