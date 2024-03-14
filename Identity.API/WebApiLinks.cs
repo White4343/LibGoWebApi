@@ -4,5 +4,6 @@
     {
         public static string GenresApi { get; set; }
         public static string BooksApi { get; set; }
+        public static string ChapterApi { get; set; }
     }
 }
