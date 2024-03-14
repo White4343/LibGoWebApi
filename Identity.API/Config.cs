@@ -22,6 +22,8 @@ public static class Config
             new ApiScope("books.admin", "Admin Books API"),
             new ApiScope("comments.client", "Client Comments API"),
             new ApiScope("comments.admin", "Admin Comments API"),
+            new ApiScope("chapters.client", "Client Chapters API"),
+            new ApiScope("chapters.admin", "Admin Chapters API"),
 
         };
 
@@ -64,6 +66,22 @@ public static class Config
                     "bookgenres.client",
                     "comments.client",
                     "comments.admin"
+                }
+            },
+            new Client
+            {
+                ClientId = "chapterswaggerui",
+                ClientName = "Chapter Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+
+                RedirectUris = {WebApiLinks.ChapterApi + "/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = {WebApiLinks.ChapterApi + "/swagger/" },
+
+                AllowedScopes =
+                {
+                    "chapters.admin",
+                    "chapters.client"
                 }
             }
         };

@@ -1,36 +1,38 @@
-using Book.API.Data;
-using Book.API.Data.Entities;
-using Book.API.Middleware;
-using Book.API.Repositories;
-using Book.API.Repositories.Interfaces;
-using Book.API.Services;
-using Book.API.Services.Interfaces;
-using Book.API.Validation;
+using Chapter.API.Data;
+using Chapter.API.Data.Entities;
+using Chapter.API.Middleware;
+using Chapter.API.Repositories;
+using Chapter.API.Repositories.Interfaces;
+using Chapter.API.Services;
+using Chapter.API.Services.Interfaces;
+using Chapter.API.Validations;
 using FluentValidation;
+using Genre.API;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace Book.API
+namespace Chapter.API
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var configuration = GetConfiguration();
-
             var builder = WebApplication.CreateBuilder(args);
+
+            var configuration = GetConfiguration();
 
             // Add services to the container.
 
-            WebApiLinks.GenresApi = configuration["GenresApi"];
+            WebApiLinks.BookApi = configuration["BookApi"];
 
             var authority = configuration["IdentityServer:Authority"];
 
             builder.Services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.Audience = "booksapi";
+                    options.Audience = "chaptersapi";
                     options.Authority = authority;
 
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -43,39 +45,25 @@ namespace Book.API
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Books.Admin", policy =>
+                options.AddPolicy("Chapters.Admin", policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "books.admin");
+                    policy.RequireClaim("scope", "chapters.admin");
                 });
-                options.AddPolicy("Books.Client", policy =>
+                options.AddPolicy("Chapters.Client", policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "books.client");
-                });
-                options.AddPolicy("Comments.Admin", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "comments.Admin");
-                });
-                options.AddPolicy("Comments.Client", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "Comments.client");
+                    policy.RequireClaim("scope", "chapters.client");
                 });
             });
-
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddHttpClient();
-            builder.Services.AddScoped<IBooksRepository, BooksRepository>();
-            builder.Services.AddScoped<IBooksService, BooksService>();
-            builder.Services.AddScoped<IGenresService, GenresService>();
+            builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
+            builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IChapterService, ChapterService>();
+            builder.Services.AddScoped<IValidator<Chapters>, ChapterValidator>();
 
-            builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
-            builder.Services.AddScoped<ICommentsService, CommentsService>();
-
-            builder.Services.AddScoped<IValidator<Comments>, CommentsValidator>();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));
@@ -92,29 +80,25 @@ namespace Book.API
             });
 
             builder.Services.AddControllers();
-
             builder.Services.AddApiVersioning();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Books.API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Chapter API", Version = "v1" });
 
                 options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows()
+                    Flows = new OpenApiOAuthFlows
                     {
-                        Implicit = new OpenApiOAuthFlow()
+                        Implicit = new OpenApiOAuthFlow
                         {
                             AuthorizationUrl = new Uri($"{authority}/connect/authorize"),
                             TokenUrl = new Uri($"{authority}/connect/token"),
                             Scopes = new Dictionary<string, string>
                             {
-                                { "books.admin", "Admin Books API" },
-                                { "books.client", "Client Books API" },
-                                { "comments.admin", "Admin Comments API" },
-                                { "comments.client", "Client Comments API" },
+                                { "chapters.admin", "Chapters Admin" },
+                                { "chapters.client", "Chapters Client" }
                             }
                         }
                     }
@@ -125,13 +109,13 @@ namespace Book.API
                     {
                         new OpenApiSecurityScheme()
                         {
-                            Reference = new OpenApiReference()
+                            Reference = new OpenApiReference
                             {
-                                Id = "oauth2",
-                                Type = ReferenceType.SecurityScheme
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2"
                             }
                         },
-                        new[] { "books.admin", "books.client", "comments.admin", "comments.client" }
+                        new[] { "chapters.admin", "chapters.client" }
                     }
                 });
             });
@@ -144,19 +128,18 @@ namespace Book.API
                 app.UseSwagger();
                 app.UseSwaggerUI(setup =>
                 {
-                    setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Books.API v1");
-                    setup.OAuthClientId("booksswaggerui");
-                    setup.OAuthAppName("Books Swagger UI");
+                    setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Chapter API V1");
+                    setup.OAuthClientId("chapterswaggerui");
+                    setup.OAuthAppName("Chapter Swagger UI");
                 });
             }
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
 
-
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");
 
-            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseAuthorization();
 
             app.MapControllers();
