@@ -1,9 +1,12 @@
 using Book.API.Data;
+using Book.API.Data.Entities;
 using Book.API.Middleware;
 using Book.API.Repositories;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services;
 using Book.API.Services.Interfaces;
+using Book.API.Validation;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -71,6 +74,8 @@ namespace Book.API
 
             builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
             builder.Services.AddScoped<ICommentsService, CommentsService>();
+
+            builder.Services.AddScoped<IValidator<Comments>, CommentsValidator>();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));
