@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using SendGrid.Helpers.Errors.Model;
 using User.API.Data;
 using User.API.Data.Entities;
+using User.API.Models.Requests;
 using User.API.Repositories.Interfaces;
 
 namespace User.API.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IUserRepository, IUserValidationRepository
     {
         private readonly AppDbContext _context;
         private readonly ILogger<UserRepository> _logger;
@@ -91,6 +92,69 @@ namespace User.API.Repositories
             }
         }
 
+        public async Task<Users> PatchUserAsync(int id, string field, string value)
+        {
+            try
+            {
+                var userToPatch = await UserExists(id);
+
+                if (field == "Email")
+                {
+                    userToPatch.Email = value;
+                }
+                else if (field == "Nickname")
+                {
+                    userToPatch.Nickname = value;
+                }
+                else if (field == "Description")
+                {
+                    userToPatch.Description = value;
+                }
+                else if (field == "PhotoUrl")
+                {
+                    userToPatch.PhotoUrl = value;
+                }
+                else
+                {
+                    throw new ValidationException("Invalid field to patch");
+                }
+
+                _context.Users.Update(userToPatch);
+
+                await _context.SaveChangesAsync();
+
+                return userToPatch;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+
+                throw;
+            }
+        }
+
+        public async Task<Users> PatchUserPasswordAsync(PatchUserPasswordRequest request)
+        {
+            try
+            {
+                var userToPatch = await UserExists(request.Id);
+
+                userToPatch.PasswordHash = request.NewPassword;
+
+                _context.Users.Update(userToPatch);
+
+                await _context.SaveChangesAsync();
+
+                return userToPatch;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+
+                throw;
+            }
+        }
+
         public async Task<bool> DeleteUserAsync(int id)
         {
             try
@@ -122,8 +186,8 @@ namespace User.API.Repositories
 
             return user;
         }
-
-        private async Task<Users> UserEmailExists(string email)
+        
+        public async Task UserEmailExists(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
@@ -131,20 +195,16 @@ namespace User.API.Repositories
             {
                 throw new ValidationException("Email is taken!");
             }
-
-            return user;
         }
 
-        private async Task<Users> UserLoginExists(string login)
+        public async Task UserLoginExists(string login)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == login);
 
             if (user != null)
             {
                 throw new ValidationException("Login is taken!");
             }
-
-            return user;
         }
     }
 }

@@ -1,6 +1,10 @@
 using Duende.IdentityServer;
+using Duende.IdentityServer.Services;
 using Identity.API;
+using Identity.API.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Identity.API;
@@ -17,6 +21,16 @@ internal static class HostingExtensions
         WebApiLinks.GenresApi = configuration["GenresApi"];
         WebApiLinks.BooksApi = configuration["BooksApi"];
         WebApiLinks.ChapterApi = configuration["ChapterApi"];
+        WebApiLinks.UsersApi = configuration["UsersApi"];
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));
+
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager<ApplicationSignInManager>()
+            .AddClaimsPrincipalFactory<ApplicationClaimsPrincipalFactory>()
+            .AddDefaultTokenProviders();
 
         builder.Services.AddRazorPages();
 
@@ -28,7 +42,6 @@ internal static class HostingExtensions
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
-            .AddTestUsers(TestUsers.Users)
             .AddDeveloperSigningCredential();
 
         builder.Services.ConfigureApplicationCookie(options =>
@@ -36,6 +49,10 @@ internal static class HostingExtensions
             options.Cookie.SameSite = SameSiteMode.None;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
+
+        builder.Services.AddScoped<IUserStore<ApplicationUser>, ApplicationUserStore>();
+        builder.Services.AddScoped<IUserPasswordStore<ApplicationUser>, ApplicationUserStore>();
+        builder.Services.AddScoped<ApplicationClaimsPrincipalFactory>();
 
         builder.Services.AddCors();
 
