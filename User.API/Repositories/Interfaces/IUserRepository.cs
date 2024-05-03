@@ -1,4 +1,5 @@
 ﻿using User.API.Data.Entities;
+using User.API.Models.Requests;
 
 namespace User.API.Repositories.Interfaces
 {
@@ -8,6 +9,8 @@ namespace User.API.Repositories.Interfaces
         Task<Users> GetUserByIdAsync(int id);
         Task<IEnumerable<Users>> GetUsersAsync();
         Task<Users> UpdateUserAsync(Users user);
+        Task<Users> PatchUserAsync(int id, string field, string value);
+        Task<Users> PatchUserPasswordAsync(PatchUserPasswordRequest request);
         Task<bool> DeleteUserAsync(int id);
     }
 }

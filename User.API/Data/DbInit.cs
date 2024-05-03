@@ -9,9 +9,7 @@ namespace User.API.Data
         {
             return new List<Users>
             {
-                new Users {Login = "User1", Password = "123", Email = "email1@email.com", Nickname = "Nickname1", Description = "..."},
-                new Users {Login = "User2", Password = "456", Email = "email2@email.com", Nickname = "Nickname2", Description = "..."},
-                new Users {Login = "User3", Password = "789", Email = "email3@email.com", Nickname = "Nickname3", Description = "..."},
+
             };
         }
 
@@ -20,7 +18,7 @@ namespace User.API.Data
             await context.Database.EnsureCreatedAsync();
             
             if (!await context.Users.AnyAsync())
-            {
+            { 
                 await context.Users.AddRangeAsync(GetPreconfiguredUsers());
             }
 
