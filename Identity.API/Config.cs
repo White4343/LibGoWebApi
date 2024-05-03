@@ -1,4 +1,5 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 
 namespace Identity.API;
 
@@ -24,7 +25,8 @@ public static class Config
             new ApiScope("comments.admin", "Admin Comments API"),
             new ApiScope("chapters.client", "Client Chapters API"),
             new ApiScope("chapters.admin", "Admin Chapters API"),
-
+            new ApiScope("users.client", "Client Users API"),
+            new ApiScope("users.admin", "Admin Users API"),
         };
 
     public static IEnumerable<Client> Clients =>
@@ -83,6 +85,24 @@ public static class Config
                     "chapters.admin",
                     "chapters.client"
                 }
-            }
+            },
+            new Client
+            {
+                ClientId = "usersswaggerui",
+                ClientName = "Users Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+
+                RedirectUris = {WebApiLinks.UsersApi + "/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = {WebApiLinks.UsersApi + "/swagger/" },
+
+                AllowedScopes =
+                {
+                    "users.admin",
+                    "users.client",
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile
+                }
+            },
         };
 }

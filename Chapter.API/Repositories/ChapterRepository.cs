@@ -146,7 +146,7 @@ namespace Chapter.API.Repositories
             {
                 throw new NotFoundException($"Chapter with id {id} not found");
             }
-
+                
             return chapter;
         }
     }
