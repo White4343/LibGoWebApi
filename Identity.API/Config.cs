@@ -104,5 +104,24 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Profile
                 }
             },
+            new Client
+            {
+                ClientId = "userweb",
+                ClientName = "User Web",
+                AllowedGrantTypes = GrantTypes.Code,
+                RequirePkce = true,
+                RequireClientSecret = false,
+                RequireConsent = false,
+
+                AllowedScopes =
+                {
+                    "users.client",
+                    "chapters.client",
+                    "bookgenres.client",
+                    "comments.client",
+                    "books.client",
+                    "genres.client"
+                }
+            }
         };
 }
