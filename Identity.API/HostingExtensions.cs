@@ -1,5 +1,6 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Services;
+using Duende.IdentityServer.Validation;
 using Identity.API;
 using Identity.API.Data;
 using Microsoft.AspNetCore.Identity;
@@ -42,6 +43,7 @@ internal static class HostingExtensions
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
+            .AddResourceOwnerValidator<ApplicationResourceOwnerPasswordValidator>()
             .AddDeveloperSigningCredential();
 
         builder.Services.ConfigureApplicationCookie(options =>
@@ -53,6 +55,7 @@ internal static class HostingExtensions
         builder.Services.AddScoped<IUserStore<ApplicationUser>, ApplicationUserStore>();
         builder.Services.AddScoped<IUserPasswordStore<ApplicationUser>, ApplicationUserStore>();
         builder.Services.AddScoped<ApplicationClaimsPrincipalFactory>();
+        builder.Services.AddScoped<IResourceOwnerPasswordValidator, ApplicationResourceOwnerPasswordValidator>();
 
         builder.Services.AddCors();
 

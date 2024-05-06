@@ -110,7 +110,7 @@ public static class Config
                 ClientName = "User Web",
                 AllowAccessTokensViaBrowser = true,
                 RequireClientSecret = false,
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                 AllowedScopes =
                 {
