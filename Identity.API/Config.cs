@@ -108,10 +108,9 @@ public static class Config
             {
                 ClientId = "userweb",
                 ClientName = "User Web",
-                AllowedGrantTypes = GrantTypes.Code,
-                RequirePkce = true,
+                AllowAccessTokensViaBrowser = true,
                 RequireClientSecret = false,
-                RequireConsent = false,
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                 AllowedScopes =
                 {
