@@ -28,7 +28,13 @@ namespace Book.API.Data.EntityConfigurations
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
+            builder.Property(b => b.PhotoUrl)
+                .HasMaxLength(200);
+
             builder.Property(b => b.PublishDate)
+                .IsRequired();
+
+            builder.Property(b => b.IsVisible)
                 .IsRequired();
 
             builder.Property(b => b.UserId)

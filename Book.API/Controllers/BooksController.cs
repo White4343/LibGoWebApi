@@ -41,7 +41,9 @@ namespace Book.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookByIdAsync(int id)
         {
-            var book = await _booksService.GetBookByIdAsync(id);
+            var userId = GetUserId();
+
+            var book = await _booksService.GetBookByIdAsync(id, userId);
 
             return Ok(book);
         }
@@ -59,7 +61,9 @@ namespace Book.API.Controllers
         [HttpGet("page/{id}")]
         public async Task<IActionResult> GetBookPageByIdAsync(int id)
         {
-            var book = await _booksService.GetBookPageByIdAsync(id);
+            int userId = GetUserId();
+
+            var book = await _booksService.GetBookPageByIdAsync(id, userId);
 
             return Ok(book);
         }
@@ -77,7 +81,9 @@ namespace Book.API.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetBooksByUserIdAsync(int userId)
         {
-            var books = await _booksService.GetBooksByUserIdAsync(userId);
+            int tokenUserId = GetUserId();
+
+            var books = await _booksService.GetBooksByUserIdAsync(userId, tokenUserId);
 
             return Ok(books);
         }
@@ -111,6 +117,11 @@ namespace Book.API.Controllers
         private int GetUserId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return -1;
+            }
 
             return int.Parse(userId);
         }

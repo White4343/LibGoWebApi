@@ -45,9 +45,9 @@ namespace Book.API.Repositories
         {
             try
             {
-                var genre = await BookExists(id);
+                var book = await BookExists(id);
 
-                return genre;
+                return book;
             }
             catch (Exception e)
             {
@@ -65,7 +65,9 @@ namespace Book.API.Repositories
                 throw new NotFoundException("No books found.");
             }
 
-            return books;
+            var resultBooks = books.Where(b => b.IsVisible).ToList();
+
+            return resultBooks;
         }
 
         public async Task<IEnumerable<Books>> GetBooksByGenreAsync(IEnumerable<BookGenres> bookGenres)
@@ -82,12 +84,14 @@ namespace Book.API.Repositories
                 }
             }
 
-            if (books.Count == 0)
+            var resultBooks = books.Where(b => b.IsVisible).ToList();
+
+            if (resultBooks.Count == 0)
             {
                 throw new NotFoundException("No books found.");
             }
 
-            return books;
+            return resultBooks;
         }
 
         public async Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id)

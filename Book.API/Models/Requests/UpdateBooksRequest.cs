@@ -16,6 +16,11 @@ namespace Book.API.Models.Requests
 
         public DateTime PublishDate { get; set; } = DateTime.Now;
 
+        public string? PhotoUrl { get; set; }
+
+        [Required]
+        public bool IsVisible { get; set; } = true;
+
         [Required]
         public int UserId { get; set; }
 

@@ -13,6 +13,11 @@ namespace Book.API.Models.Requests
         [Required]
         public decimal Price { get; set; }
 
+        public string? PhotoUrl { get; set; }
+
+        [Required]
+        public bool IsVisible { get; set; }
+
         public int[]? CoAuthorIds { get; set; }
     }
 }

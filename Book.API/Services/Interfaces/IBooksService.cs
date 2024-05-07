@@ -8,10 +8,10 @@ namespace Book.API.Services.Interfaces
     public interface IBooksService
     {
         Task<Books> CreateBookAsync(CreateBooksRequest book, int userId);
-        Task<Books> GetBookByIdAsync(int id);
-        Task<GetBookByPageResponse> GetBookPageByIdAsync(int bookId);
+        Task<Books> GetBookByIdAsync(int id, int userId);
+        Task<GetBookByPageResponse> GetBookPageByIdAsync(int bookId, int userId);
         Task<GetBooksByGenreResponse> GetGenreBooksPageByIdAsync(int genreId);
-        Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id);
+        Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id, int userId);
         Task<IEnumerable<Books>> GetBooksAsync();
         Task<Books> UpdateBookAsync(UpdateBooksRequest book, int userId);
         Task<bool> DeleteBookAsync(int id, int userId);

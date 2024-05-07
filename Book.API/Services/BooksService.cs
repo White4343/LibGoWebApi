@@ -34,6 +34,8 @@ namespace Book.API.Services
                     Description = book.Description,
                     Price = book.Price,
                     PublishDate = DateTime.UtcNow,
+                    PhotoUrl = book.PhotoUrl,
+                    IsVisible = book.IsVisible,
                     UserId = userId,
                     CoAuthorIds = book.CoAuthorIds
                 };
@@ -49,11 +51,21 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<Books> GetBookByIdAsync(int id)
+        public async Task<Books> GetBookByIdAsync(int id, int userId)
         {
             try
             {
                 var book = await _booksRepository.GetBookByIdAsync(id);
+
+                if (book.UserId == userId)
+                {
+                    return book;
+                }
+
+                if (!book.IsVisible)
+                {
+                    throw new UnauthorizedAccessException("You are not the author of this book");
+                }
 
                 return book;
             }
@@ -64,18 +76,27 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<GetBookByPageResponse> GetBookPageByIdAsync(int id)
+        public async Task<GetBookByPageResponse> GetBookPageByIdAsync(int id, int userId)
         {
             try
             {
-                var book = await GetBookByIdAsync(id);
+                var book = await GetBookByIdAsync(id, userId);
+
                 var bookGenres = await _genresService.GetGenresByBookIdAsync(id, null);
 
                 var response = new GetBookByPageResponse
                 {
-                    Book = book,
                     Genres = bookGenres.Genres
                 };
+
+                if (book.UserId == userId && !book.IsVisible)
+                {
+                    response.Book = book;
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("You are not the author of this book");
+                }
 
                 return response;
             }
@@ -94,6 +115,8 @@ namespace Book.API.Services
 
                 var booksByGenre = await _booksRepository.GetBooksByGenreAsync(bookGenresByGenreResponse.Books);
 
+                booksByGenre = booksByGenre.Where(b => b.IsVisible).ToList();
+
                 var response = new GetBooksByGenreResponse
                 {
                     Genre = bookGenresByGenreResponse.Genre,
@@ -109,11 +132,20 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id)
+        public async Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id, int userId)
         {
             try
             {
                 var books = await _booksRepository.GetBooksByUserIdAsync(id);
+
+                var firstBook = books.FirstOrDefault();
+
+                if (firstBook.UserId == userId)
+                {
+                    return books;
+                }
+
+                books = books.Where(b => b.IsVisible).ToList();
 
                 return books;
             }
@@ -143,7 +175,7 @@ namespace Book.API.Services
         {
             try
             { 
-                await BookExists(book.Id);
+                await BookExists(book.Id, userId);
 
                 await IsBookAuthor(book.UserId, userId);
 
@@ -164,7 +196,7 @@ namespace Book.API.Services
         {
             try
             {
-                var book = await BookExists(id);
+                var book = await BookExists(id, userId);
 
                 await IsBookAuthor(book.UserId, userId);
 
@@ -179,11 +211,11 @@ namespace Book.API.Services
             }
         }
         
-        private async Task<Books> BookExists(int id)
+        private async Task<Books> BookExists(int id, int userId)
         {
             try
             {
-                var book = await GetBookByIdAsync(id);
+                var book = await GetBookByIdAsync(id, userId);
 
                 return book;
             }
