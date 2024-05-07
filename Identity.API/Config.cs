@@ -119,7 +119,9 @@ public static class Config
                     "bookgenres.client",
                     "comments.client",
                     "books.client",
-                    "genres.client"
+                    "genres.client",
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile
                 }
             }
         };
