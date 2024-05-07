@@ -31,7 +31,12 @@ namespace Book.API.Services
         {
             try
             {
-                await BookExists(comment.BookId);
+                var book = await BookExists(comment.BookId, userId);
+
+                if (!book.IsVisible)
+                {
+                    throw new UnauthorizedAccessException("You can't comment on a book that is not visible.");
+                }
 
                 var commentToCreate = new Comments
                 {
@@ -77,6 +82,13 @@ namespace Book.API.Services
         {
             try
             {
+                var book = await BookExists(bookId, -1);
+
+                if (!book.IsVisible)
+                {
+                    throw new UnauthorizedAccessException("You can't get comments for a book that is not visible.");
+                }
+
                 var comments = await _commentsRepository.GetCommentsByBookIdAsync(bookId);
 
                 return _mapper.Map<IEnumerable<CommentsDto>>(comments);
@@ -107,7 +119,7 @@ namespace Book.API.Services
         {
             try
             {
-                await BookExists(comment.BookId);
+                var book = await BookExists(comment.BookId, userId);
 
                 var commentToUpdate = new Comments
                 {
@@ -180,11 +192,11 @@ namespace Book.API.Services
             }
         }
 
-        private async Task<Books> BookExists(int id)
+        private async Task<Books> BookExists(int id, int userId)
         {
             try
             {
-                var book = await _booksService.GetBookByIdAsync(id);
+                var book = await _booksService.GetBookByIdAsync(id, userId);
 
                 return book;
             }

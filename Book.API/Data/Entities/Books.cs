@@ -6,7 +6,9 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
+        public string? PhotoUrl { get; set; }
         public DateTime PublishDate { get; set; }
+        public bool IsVisible { get; set; }
         public int UserId { get; set; }
         public int[]? CoAuthorIds { get; set; }
     }
