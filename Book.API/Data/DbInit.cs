@@ -44,6 +44,15 @@ namespace Book.API.Data
             };
         }
 
+        private static IEnumerable<Readers> GetPreconfiguredReaders()
+        {
+            return new List<Readers>
+            {
+                new Readers { Status = "Reading", NotifyEnabled = true, UserId = 3, BookId = 1, ChapterId = 1 },
+                new Readers { Status = "Abandoned", NotifyEnabled = true, UserId = 3, BookId = 2, ChapterId = 2 }
+            };
+        }
+
         public static async Task InitializeAsync(AppDbContext context)
         {
             await context.Database.EnsureCreatedAsync();
@@ -56,6 +65,11 @@ namespace Book.API.Data
             if (!await context.Comments.AnyAsync())
             {
                 await context.Comments.AddRangeAsync(GetPreconfiguredComments());
+            }
+
+            if (!await context.Readers.AnyAsync())
+            {
+                await context.Readers.AddRangeAsync(GetPreconfiguredReaders());
             }
 
             await context.SaveChangesAsync();
