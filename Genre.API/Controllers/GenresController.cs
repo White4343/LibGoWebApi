@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+// TODO: Caching
+// TODO: Move to Book.API
 namespace Genre.API.Controllers
 {
     [Authorize]
