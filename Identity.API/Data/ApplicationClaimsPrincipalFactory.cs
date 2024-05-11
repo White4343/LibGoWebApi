@@ -1,5 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System.Collections;
+using System.Security.Claims;
 using IdentityModel;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -16,12 +18,16 @@ namespace Identity.API.Data
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
         {
-            var identity = await base.GenerateClaimsAsync(user);
+            ICollection<Claim> claims = new HashSet<Claim>(new ClaimComparer())
+            {
+                new Claim(JwtClaimTypes.Subject, user.Id.ToString()),
+                new Claim(JwtClaimTypes.PreferredUserName, user.Nickname),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                new Claim("Role", user.Role),
+            };
 
-            identity.AddClaim(new Claim(JwtClaimTypes.Subject, user.Id.ToString()));
-            identity.AddClaim(new Claim(JwtClaimTypes.PreferredUserName, user.Nickname));
-            identity.AddClaim(new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName));
-            identity.AddClaim(new Claim("Role", user.Role));
+            ClaimsIdentity identity =
+                new ClaimsIdentity(claims, /*Explicit*/CookieAuthenticationDefaults.AuthenticationScheme);
 
             return identity;
         }

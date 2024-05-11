@@ -370,3 +370,5 @@ FodyWeavers.xsd
 /Chapter.API/appsettings.json
 /Book.API/appsettings.json
 /User.API/appsettings.json
+/Identity.API/appsettings.json
+/Identity.API/appsettings.Development.json

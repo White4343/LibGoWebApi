@@ -27,6 +27,8 @@ public static class Config
             new ApiScope("chapters.admin", "Admin Chapters API"),
             new ApiScope("users.client", "Client Users API"),
             new ApiScope("users.admin", "Admin Users API"),
+            new ApiScope("readers.client", "Client Readers API"),
+            new ApiScope("readers.admin", "Admin Readers API"),
         };
 
     public static IEnumerable<Client> Clients =>
@@ -67,7 +69,9 @@ public static class Config
                     "bookgenres.admin",
                     "bookgenres.client",
                     "comments.client",
-                    "comments.admin"
+                    "comments.admin",
+                    "readers.client",
+                    "readers.admin"
                 }
             },
             new Client
@@ -120,6 +124,7 @@ public static class Config
                     "comments.client",
                     "books.client",
                     "genres.client",
+                    "readers.client",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile
                 }

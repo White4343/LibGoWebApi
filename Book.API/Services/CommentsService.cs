@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
 using Book.API.Models.Dtos;
-using Book.API.Models.Requests;
+using Book.API.Models.Requests.CommentsRequests;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
 using FluentValidation;

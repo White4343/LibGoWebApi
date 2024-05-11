@@ -72,9 +72,10 @@ internal static class HostingExtensions
         }
 
         app.UseCors(config => config
-            .AllowAnyOrigin()
+            .WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
+            .AllowCredentials()
         );
 
         // uncomment if you want to add a UI

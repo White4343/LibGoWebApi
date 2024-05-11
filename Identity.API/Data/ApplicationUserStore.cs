@@ -80,7 +80,9 @@ namespace Identity.API.Data
 
         public async Task<ApplicationUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            return await _dbContext.ApplicationUsers.FindAsync(new object[] { userId }, cancellationToken);
+            int userIdInt = int.Parse(userId);
+
+            return await _dbContext.ApplicationUsers.FindAsync(userIdInt, cancellationToken);
         }
 
         public async Task<ApplicationUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)

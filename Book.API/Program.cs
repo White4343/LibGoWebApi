@@ -24,6 +24,7 @@ namespace Book.API
             // Add services to the container.
 
             WebApiLinks.GenresApi = configuration["GenresApi"];
+            WebApiLinks.ChaptersApi = configuration["ChaptersApi"];
 
             var authority = configuration["IdentityServer:Authority"];
 
@@ -61,7 +62,17 @@ namespace Book.API
                 options.AddPolicy("Comments.Client", policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "Comments.client");
+                    policy.RequireClaim("scope", "comments.client");
+                });
+                options.AddPolicy("Readers.Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "readers.admin");
+                });
+                options.AddPolicy("Readers.Client", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "readers.client");
                 });
             });
 
@@ -74,6 +85,11 @@ namespace Book.API
 
             builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
             builder.Services.AddScoped<ICommentsService, CommentsService>();
+
+            builder.Services.AddScoped<IChapterService, ChaptersService>();
+
+            builder.Services.AddScoped<IReadersRepository, ReadersRepository>();
+            builder.Services.AddScoped<IReadersService, ReadersService>();
 
             builder.Services.AddScoped<IValidator<Comments>, CommentsValidator>();
 
@@ -115,6 +131,8 @@ namespace Book.API
                                 { "books.client", "Client Books API" },
                                 { "comments.admin", "Admin Comments API" },
                                 { "comments.client", "Client Comments API" },
+                                { "readers.admin", "Admin Readers API" },
+                                { "readers.client", "Client Readers API" },
                             }
                         }
                     }
@@ -131,7 +149,12 @@ namespace Book.API
                                 Type = ReferenceType.SecurityScheme
                             }
                         },
-                        new[] { "books.admin", "books.client", "comments.admin", "comments.client" }
+                        new[]
+                        {
+                            "books.admin", "books.client", 
+                            "comments.admin", "comments.client", 
+                            "readers.admin", "readers.client"
+                        }
                     }
                 });
             });

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
-using Book.API.Models.Requests;
-using Book.API.Models.Responses;
+using Book.API.Models.Requests.BooksRequests;
+using Book.API.Models.Responses.BooksResponses;
 using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
@@ -211,7 +211,7 @@ namespace Book.API.Services
             }
         }
         
-        private async Task<Books> BookExists(int id, int userId)
+        public async Task<Books> BookExists(int id, int userId)
         {
             try
             {

@@ -1,6 +1,6 @@
 ﻿using Book.API.Data.Entities;
 
-namespace Book.API.Models.Responses
+namespace Book.API.Models.Responses.BooksResponses
 {
     public class GetBookByPageResponse
     {

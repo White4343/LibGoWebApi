@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Book.API.Models.Requests
+namespace Book.API.Models.Requests.BooksRequests
 {
     public class UpdateBooksRequest
     {
@@ -11,7 +11,7 @@ namespace Book.API.Models.Requests
         public string Name { get; set; }
 
         public string? Description { get; set; } = "";
-        
+
         public decimal? Price { get; set; } = 0;
 
         public DateTime PublishDate { get; set; } = DateTime.Now;
