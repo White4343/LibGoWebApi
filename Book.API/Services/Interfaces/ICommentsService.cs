@@ -1,6 +1,6 @@
 ﻿using Book.API.Data.Entities;
 using Book.API.Models.Dtos;
-using Book.API.Models.Requests;
+using Book.API.Models.Requests.CommentsRequests;
 
 namespace Book.API.Services.Interfaces
 {

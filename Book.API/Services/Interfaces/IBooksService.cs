@@ -1,6 +1,6 @@
 ﻿using Book.API.Data.Entities;
-using Book.API.Models.Requests;
-using Book.API.Models.Responses;
+using Book.API.Models.Requests.BooksRequests;
+using Book.API.Models.Responses.BooksResponses;
 using Book.API.Models.Responses.GenresResponses;
 
 namespace Book.API.Services.Interfaces
