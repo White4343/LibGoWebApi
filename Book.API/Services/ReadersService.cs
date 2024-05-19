@@ -69,7 +69,7 @@ namespace Book.API.Services
                 {
                     try
                     {
-                        var book = await _booksService.GetBookByIdAsync(reader.BookId, id);
+                        var book = await _booksService.GetBookByIdAsync(reader.BookId, tokenUserId);
 
                         var mappedBook = _mapper.Map<BooksDto>(book);
 
@@ -85,7 +85,7 @@ namespace Book.API.Services
                 
                 if (tokenUserId != id)
                 {
-                    readersDto = readersDto.SkipWhile(x => !x.IsVisible).ToList();
+                    readersDto = readersDto.Where(x => x.IsVisible).ToList();
 
                     if (readersDto.Count() == 0)
                     {
