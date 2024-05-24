@@ -25,7 +25,6 @@ namespace Book.API.Data.EntityConfigurations
                 .IsRequired();
 
             builder.Property(b => b.Price)
-                .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
             builder.Property(b => b.PhotoUrl)
@@ -35,6 +34,9 @@ namespace Book.API.Data.EntityConfigurations
                 .IsRequired();
 
             builder.Property(b => b.IsVisible)
+                .IsRequired();
+
+            builder.Property(b => b.IsAvailableToBuy)
                 .IsRequired();
 
             builder.Property(b => b.UserId)
