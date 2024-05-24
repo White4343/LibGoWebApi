@@ -7,6 +7,8 @@
         public string Description { get; set; }
         public decimal Price { get; set; }
         public DateTime PublishDate { get; set; }
+        public bool IsVisible { get; set; }
+        public bool IsAvailableToBuy { get; set; }
         public int UserId { get; set; }
         public int[]? CoAuthorIds { get; set; }
     }

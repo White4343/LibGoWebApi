@@ -21,6 +21,9 @@ namespace User.API
         {
             var configuration = GetConfiguration();
 
+            Stripe.StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
+            WebApiLinks.BookApi = configuration["BookApi"];
+
             var builder = WebApplication.CreateBuilder(args);
 
             var authority = configuration["IdentityServer:Authority"];
@@ -59,6 +62,11 @@ namespace User.API
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserValidationRepository, UserRepository>();
 
+            builder.Services.AddScoped<IBoughtBooksRepository, BoughtBooksRepository>();
+            builder.Services.AddScoped<IBoughtBooksService, BoughtBooksService>();
+
+            builder.Services.AddScoped<IBooksService, BooksService>();
+            builder.Services.AddScoped<ICheckoutService, CheckoutService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IValidator<string>, UserPasswordValidator>();
@@ -79,6 +87,8 @@ namespace User.API
                         .AllowCredentials();
                 });
             });
+
+            builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
             builder.Services.AddControllers();
             builder.Services.AddApiVersioning();
@@ -142,6 +152,7 @@ namespace User.API
 
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");
+            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();

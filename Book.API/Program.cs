@@ -21,8 +21,6 @@ namespace Book.API
 
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             WebApiLinks.GenresApi = configuration["GenresApi"];
             WebApiLinks.ChaptersApi = configuration["ChaptersApi"];
 
@@ -167,14 +165,13 @@ namespace Book.API
                 app.UseSwagger();
                 app.UseSwaggerUI(setup =>
                 {
-                    setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Books.API v1");
+                    setup.SwaggerEndpoint($"{configuration["SecurePathBase"]}/swagger/v1/swagger.json", "Books.API v1");
                     setup.OAuthClientId("booksswaggerui");
                     setup.OAuthAppName("Books Swagger UI");
                 });
             }
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
-
 
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");

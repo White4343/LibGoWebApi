@@ -1,4 +1,4 @@
-﻿namespace Book.API.Data.Entities
+﻿namespace User.API.Models
 {
     public class Books
     {
