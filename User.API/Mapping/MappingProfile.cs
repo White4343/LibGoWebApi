@@ -18,6 +18,9 @@ namespace User.API.Mapping
 
             CreateMap<Users, GetUserPrivatePageResponse>();
             CreateMap<GetUserPrivatePageResponse, Users>();
+
+            CreateMap<BoughtBooks, GetBoughtBooksClientResponse>();
+            CreateMap<GetBoughtBooksClientResponse, BoughtBooks>();
         }
     }
 }
