@@ -59,11 +59,10 @@ namespace User.API
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddHttpClient();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserValidationRepository, UserRepository>();
-
             builder.Services.AddScoped<IBoughtBooksRepository, BoughtBooksRepository>();
             builder.Services.AddScoped<IBoughtBooksService, BoughtBooksService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserValidationRepository, UserRepository>();
 
             builder.Services.AddScoped<IBooksService, BooksService>();
             builder.Services.AddScoped<ICheckoutService, CheckoutService>();
@@ -73,6 +72,7 @@ namespace User.API
             builder.Services.AddScoped<IValidator<UserEmailDto>, UserEmailValidator>();
             builder.Services.AddScoped<IValidator<Users>, UserValidator>();
             builder.Services.AddScoped<IValidator<UserPatchDto>, UserPatchValidator>();
+
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));

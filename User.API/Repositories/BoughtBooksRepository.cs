@@ -9,9 +9,9 @@ namespace User.API.Repositories
     public class BoughtBooksRepository : IBoughtBooksRepository
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<BoughtBooks> _logger;
+        private readonly ILogger<BoughtBooksRepository> _logger;
 
-        public BoughtBooksRepository(AppDbContext context, ILogger<BoughtBooks> logger)
+        public BoughtBooksRepository(AppDbContext context, ILogger<BoughtBooksRepository> logger)
         {
             _context = context;
             _logger = logger;

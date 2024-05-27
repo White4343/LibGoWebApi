@@ -12,7 +12,7 @@ namespace User.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class CheckoutController : ControllerBase
     {
@@ -29,8 +29,8 @@ namespace User.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> CheckoutOrder([FromBody] int bookId, [FromServices] IServiceProvider sp)
+        [HttpPost("{id}")]
+        public async Task<ActionResult> CheckoutOrder(int id, [FromServices] IServiceProvider sp)
         {
             var referer = Request.Headers.Referer;
             s_wasmClientURL = referer[0];
@@ -50,7 +50,7 @@ namespace User.API.Controllers
             if (thisApiUrl is not null)
             {
                 var userId = GetUserId();
-                var sessionId = await CheckOut(bookId, userId, thisApiUrl);
+                var sessionId = await CheckOut(id, userId, thisApiUrl);
                 var pubKey = _configuration["Stripe:PubKey"];
 
                 var checkoutOrderResponse = new CheckoutOrderResponse()
@@ -77,7 +77,7 @@ namespace User.API.Controllers
 
         [HttpGet("success")]
         // Automatic query parameter handling from ASP.NET.
-        public ActionResult CheckoutSuccess(string sessionId)
+        public async Task<ActionResult> CheckoutSuccess(string sessionId)
         {
             var sessionService = new SessionService();
             var session = sessionService.Get(sessionId);
@@ -92,7 +92,8 @@ namespace User.API.Controllers
 
             _logger.LogInformation($"User {userId} bought book {bookId}");
 
-            _checkoutService.SuccessfulCheckoutSessionAsync(bookId, userId);
+            // TODO: Fix AppDbContext Error
+            await _checkoutService.SuccessfulCheckoutSessionAsync(bookId, userId);
 
             return Redirect(s_wasmClientURL + "success");
         }
