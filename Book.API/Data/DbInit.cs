@@ -31,16 +31,26 @@ namespace Book.API.Data
         {
             return new List<Comments>
             {
-                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "This is a great book!", UserId = 1, BookId = 1 },
-                new Comments { Content = "I love this book!", UserId = 1, BookId = 1 }
+                new Comments { Content = "This is a great book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "This is a great book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 },
+                new Comments { Content = "I love this book!", 
+                    CreateDate =  DateTime.UtcNow, UpdateDate = null, UserId = 1, BookId = 1 }
             };
         }
 

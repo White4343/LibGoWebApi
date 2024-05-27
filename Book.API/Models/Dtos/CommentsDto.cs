@@ -11,6 +11,11 @@ namespace Book.API.Models.Dtos
         public string Content { get; set; }
 
         [Required]
+        public DateTime CreateDate { get; set; }
+
+        public DateTime? UpdateDate { get; set; }
+
+        [Required]
         public int UserId { get; set; }
 
         [Required]

@@ -103,6 +103,8 @@ namespace Book.API.Repositories
 
                 commentToUpdate.Content = comment.Content;
 
+                commentToUpdate.UpdateDate = DateTime.UtcNow;
+
                 _context.Comments.Update(commentToUpdate);
 
                 await _context.SaveChangesAsync();
