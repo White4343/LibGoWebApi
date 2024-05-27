@@ -41,6 +41,8 @@ namespace Book.API.Services
                 var commentToCreate = new Comments
                 {
                     Content = comment.Content,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = null,
                     BookId = comment.BookId,
                     UserId = userId
                 };
