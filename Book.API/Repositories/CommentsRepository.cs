@@ -101,6 +101,10 @@ namespace Book.API.Repositories
 
                 await IsCommentAuthor(commentToUpdate.UserId, comment.UserId);
 
+                commentToUpdate.UserNickname = comment.UserNickname;
+
+                commentToUpdate.UserPhotoUrl = comment.UserPhotoUrl;
+
                 commentToUpdate.Content = comment.Content;
 
                 commentToUpdate.UpdateDate = DateTime.UtcNow;

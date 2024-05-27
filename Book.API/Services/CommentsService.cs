@@ -27,11 +27,11 @@ namespace Book.API.Services
             _validator = validator;
         }
 
-        public async Task<CommentsDto> CreateCommentAsync(CreateCommentsRequest comment, int userId)
+        public async Task<CommentsDto> CreateCommentAsync(CreateCommentsRequest comment, UserDataDto user)
         {
             try
             {
-                var book = await BookExists(comment.BookId, userId);
+                var book = await BookExists(comment.BookId, user.Id);
 
                 if (!book.IsVisible)
                 {
@@ -41,10 +41,12 @@ namespace Book.API.Services
                 var commentToCreate = new Comments
                 {
                     Content = comment.Content,
+                    UserNickname = user.Nickname,
+                    UserPhotoUrl = user.PhotoUrl,
                     CreateDate = DateTime.UtcNow,
                     UpdateDate = null,
                     BookId = comment.BookId,
-                    UserId = userId
+                    UserId = user.Id
                 };
 
                 var validationResult = await _validator.ValidateAsync(commentToCreate);
@@ -117,18 +119,20 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<CommentsDto> UpdateCommentAsync(UpdateCommentsRequest comment, int userId)
+        public async Task<CommentsDto> UpdateCommentAsync(UpdateCommentsRequest comment, UserDataDto user)
         {
             try
             {
-                var book = await BookExists(comment.BookId, userId);
+                var book = await BookExists(comment.BookId, user.Id);
 
                 var commentToUpdate = new Comments
                 {
                     Id = comment.Id,
+                    UserNickname = user.Nickname,
+                    UserPhotoUrl = user.PhotoUrl,
                     Content = comment.Content,
                     BookId = comment.BookId,
-                    UserId = userId
+                    UserId = user.Id
                 };
 
                 var validationResult = await _validator.ValidateAsync(commentToUpdate);

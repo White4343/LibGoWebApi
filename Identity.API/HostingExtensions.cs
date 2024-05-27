@@ -33,6 +33,7 @@ internal static class HostingExtensions
             .AddClaimsPrincipalFactory<ApplicationClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
+        
         builder.Services.AddRazorPages();
 
         builder.Services.AddIdentityServer(options =>
@@ -44,6 +45,7 @@ internal static class HostingExtensions
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddResourceOwnerValidator<ApplicationResourceOwnerPasswordValidator>()
+            .AddProfileService<ApplicationProfileService>()
             .AddDeveloperSigningCredential();
 
         builder.Services.ConfigureApplicationCookie(options =>
