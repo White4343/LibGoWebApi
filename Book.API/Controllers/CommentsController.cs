@@ -4,6 +4,8 @@ using Book.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Book.API.Models.Dtos;
+using IdentityModel;
 
 namespace Book.API.Controllers
 {
@@ -31,9 +33,9 @@ namespace Book.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            int userId = GetUserId();
+            var user = GetUserData();
 
-            var createdComment = await _commentsService.CreateCommentAsync(comment, userId);
+            var createdComment = await _commentsService.CreateCommentAsync(comment, user);
             return Ok(createdComment);
         }
 
@@ -55,13 +57,12 @@ namespace Book.API.Controllers
             return Ok(comments);
         }
 
-        [AllowAnonymous]
         [HttpGet("user")]
         public async Task<IActionResult> GetCommentsByUserIdAsync()
         {
-            int userId = GetUserId();
+            var user = GetUserData();
 
-            var comments = await _commentsService.GetCommentsByBookIdAsync(userId);
+            var comments = await _commentsService.GetCommentsByBookIdAsync(user.Id);
 
             return Ok(comments);
         }
@@ -75,9 +76,9 @@ namespace Book.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            int userId = GetUserId();
+            var user = GetUserData();
 
-            var updatedComment = await _commentsService.UpdateCommentAsync(comment, userId);
+            var updatedComment = await _commentsService.UpdateCommentAsync(comment, user);
 
             return Ok(updatedComment);
         }
@@ -86,18 +87,27 @@ namespace Book.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommentAsync(int id)
         {
-            int userId = GetUserId();
+            var user = GetUserData();
 
-            var deleted = await _commentsService.DeleteCommentAsync(id, userId);
+            var deleted = await _commentsService.DeleteCommentAsync(id, user.Id);
 
             return Ok(deleted);
         }
 
-        private int GetUserId()
+        private UserDataDto GetUserData()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            var userNickname = User.FindFirstValue("nickname");
 
-            return int.Parse(userId);
+            var user = new UserDataDto
+            {
+                Id = int.Parse(userId),
+                Role = userRole,
+                Nickname = userNickname
+            };
+
+            return user;
         }
     }
 }

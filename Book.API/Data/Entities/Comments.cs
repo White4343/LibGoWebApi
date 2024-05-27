@@ -6,6 +6,10 @@
 
         public string Content { get; set; }
 
+        public string UserNickname { get; set; }
+
+        public string? UserPhotoUrl { get; set; }
+
         public DateTime CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 

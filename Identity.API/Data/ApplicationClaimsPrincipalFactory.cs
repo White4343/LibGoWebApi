@@ -21,7 +21,7 @@ namespace Identity.API.Data
             ICollection<Claim> claims = new HashSet<Claim>(new ClaimComparer())
             {
                 new Claim(JwtClaimTypes.Subject, user.Id.ToString()),
-                new Claim(JwtClaimTypes.PreferredUserName, user.Nickname),
+                new Claim(ClaimTypes.Name, user.Nickname),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
                 new Claim("Role", user.Role),
             };

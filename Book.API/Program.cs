@@ -131,6 +131,9 @@ namespace Book.API
                                 { "comments.client", "Client Comments API" },
                                 { "readers.admin", "Admin Readers API" },
                                 { "readers.client", "Client Readers API" },
+                                { "nickname", "Client Nickname" },
+                                { "role", "Client Role" },
+                                { "photoUrl", "Client Profile Photo Url" },
                             }
                         }
                     }
@@ -151,7 +154,9 @@ namespace Book.API
                         {
                             "books.admin", "books.client", 
                             "comments.admin", "comments.client", 
-                            "readers.admin", "readers.client"
+                            "readers.admin", "readers.client",
+                            "nickname", "role",
+                            "photoUrl"
                         }
                     }
                 });

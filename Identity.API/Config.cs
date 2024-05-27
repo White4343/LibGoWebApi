@@ -29,6 +29,9 @@ public static class Config
             new ApiScope("users.admin", "Admin Users API"),
             new ApiScope("readers.client", "Client Readers API"),
             new ApiScope("readers.admin", "Admin Readers API"),
+            new ApiScope("nickname", "User nickname", userClaims: new []{"nickname"}),
+            new ApiScope("role", "User role", userClaims: new []{"role"}),
+            new ApiScope("photoUrl", "User Photo Url", userClaims: new []{"photoUrl"}),
         };
 
     public static IEnumerable<Client> Clients =>
@@ -58,6 +61,7 @@ public static class Config
                 ClientName = "Books Swagger UI",
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
 
                 RedirectUris = {WebApiLinks.BooksApi + "/swagger/oauth2-redirect.html" },
                 PostLogoutRedirectUris = {WebApiLinks.BooksApi + "/swagger/" },
@@ -71,7 +75,10 @@ public static class Config
                     "comments.client",
                     "comments.admin",
                     "readers.client",
-                    "readers.admin"
+                    "readers.admin",
+                    "nickname",
+                    "role",
+                    "photoUrl"
                 }
             },
             new Client
@@ -125,6 +132,9 @@ public static class Config
                     "books.client",
                     "genres.client",
                     "readers.client",
+                    "nickname",
+                    "role",
+                    "photoUrl",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile
                 }

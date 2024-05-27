@@ -20,6 +20,11 @@ namespace Book.API.Data.EntityConfigurations
                 .HasMaxLength(400)
                 .IsRequired();
 
+            builder.Property(c => c.UserNickname)
+                .IsRequired();
+
+            builder.Property(c => c.UserPhotoUrl);
+
             builder.Property(c => c.CreateDate)
                 .IsRequired();
 
