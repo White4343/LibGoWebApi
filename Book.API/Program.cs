@@ -165,7 +165,7 @@ namespace Book.API
                 app.UseSwagger();
                 app.UseSwaggerUI(setup =>
                 {
-                    setup.SwaggerEndpoint($"{configuration["SecurePathBase"]}/swagger/v1/swagger.json", "Books.API v1");
+                    setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Books.API v1");
                     setup.OAuthClientId("booksswaggerui");
                     setup.OAuthAppName("Books Swagger UI");
                 });
