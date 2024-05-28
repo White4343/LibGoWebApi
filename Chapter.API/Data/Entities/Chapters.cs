@@ -8,6 +8,7 @@
         public bool IsFree { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public int AuthorUserId { get; set; }
         public int BookId { get; set; }
     }
 }

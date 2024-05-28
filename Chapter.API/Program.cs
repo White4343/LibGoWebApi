@@ -26,6 +26,7 @@ namespace Chapter.API
             // Add services to the container.
 
             WebApiLinks.BookApi = configuration["BookApi"];
+            WebApiLinks.UserApi = configuration["UserApi"];
 
             var authority = configuration["IdentityServer:Authority"];
 
@@ -60,8 +61,9 @@ namespace Chapter.API
 
             builder.Services.AddHttpClient();
             builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
-            builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<IChapterService, ChapterService>();
+            builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IBoughtBooksService, BoughtBooksService>();
             builder.Services.AddScoped<IValidator<Chapters>, ChapterValidator>();
 
 

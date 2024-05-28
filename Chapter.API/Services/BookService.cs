@@ -17,9 +17,9 @@ namespace Chapter.API.Services
             _logger = logger;
         }
 
-        public async Task<Books> GetBookByIdAsync(int id)
+        public async Task<Books> GetBookByIdAsync(int id, string? token)
         {
-            var client = await CreateClient(null);
+            var client = await CreateClient(token);
 
             var response = await client.GetAsync($"{WebApiLinks.BookApi}/api/v1/books/{id}");
 

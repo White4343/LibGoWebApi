@@ -1,8 +1,11 @@
-﻿using Chapter.API.Data.Entities;
+﻿using AutoMapper;
+using Chapter.API.Data.Entities;
 using Chapter.API.Models.Requests;
+using Chapter.API.Models.Responses;
 using Chapter.API.Repositories.Interfaces;
 using Chapter.API.Services.Interfaces;
 using FluentValidation;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Chapter.API.Services
 {
@@ -12,29 +15,34 @@ namespace Chapter.API.Services
         private readonly IBookService _bookService;
         private readonly IValidator<Chapters> _validator;
         private readonly ILogger<ChapterService> _logger;
+        private readonly IBoughtBooksService _boughtBooksService;
+        private readonly IMapper _mapper;
 
-        public ChapterService(IChapterRepository chapterRepository,  ILogger<ChapterService> logger, IBookService bookService, IValidator<Chapters> validator)
+        public ChapterService(IChapterRepository chapterRepository,  ILogger<ChapterService> logger, IBookService bookService, IValidator<Chapters> validator, IBoughtBooksService boughtBooksService, IMapper mapper)
         {
             _chapterRepository = chapterRepository;
             _logger = logger;
             _bookService = bookService;
             _validator = validator;
+            _boughtBooksService = boughtBooksService;
+            _mapper = mapper;
         }
 
-        public async Task<Chapters> CreateChapterAsync(CreateChapterRequest chapter, int userId)
+        public async Task<Chapters> CreateChapterAsync(CreateChapterRequest chapter, int userId, string? token)
         {
             try
             {
-                var book = await BookExistsAsync(chapter.BookId);
+                var book = await BookExistsAsync(chapter.BookId, token);
 
-                await IsBookAuthor(book.UserId, userId);
+                IsBookAuthor(book.UserId, userId);
 
                 var chapterToCreate = new Chapters
                 {
                     Title = chapter.Title,
                     Content = chapter.Content,
                     IsFree = chapter.IsFree,
-                    BookId = chapter.BookId
+                    BookId = chapter.BookId,
+                    AuthorUserId = userId
                 };
 
                 var validationResult = await _validator.ValidateAsync(chapterToCreate);
@@ -56,11 +64,13 @@ namespace Chapter.API.Services
             }
         }
 
-        public async Task<Chapters> GetChapterByIdAsync(int id)
+        public async Task<Chapters> GetChapterByIdAsync(int id, int? userId, string? token)
         {
             try
             {
                 var chapter = await _chapterRepository.GetChapterByIdAsync(id);
+
+                await CheckUser(chapter, userId, token);
 
                 return chapter;
             }
@@ -71,11 +81,31 @@ namespace Chapter.API.Services
             }
         }
 
-        public async Task<IEnumerable<Chapters>> GetChaptersByBookIdAsync(int bookId)
+        public async Task<IEnumerable<Chapters>> GetChaptersByBookIdAsync(int bookId, int? userId, string? token)
         {
             try
             {
+                await BookExistsAsync(bookId, token);
+
                 var chapters = await _chapterRepository.GetChaptersByBookIdAsync(bookId);
+                
+                if (chapters.Any(ch => !ch.IsFree))
+                {
+                    try
+                    {
+                        IsUserAuthorized(userId);
+
+                        await IsBookBought(bookId, userId, token);
+
+                        return chapters;
+                    }
+                    catch (Exception e)
+                    {
+                        chapters = chapters.Where(ch => ch.IsFree).ToList();
+
+                        return chapters;
+                    }
+                }
 
                 return chapters;
             }
@@ -86,13 +116,30 @@ namespace Chapter.API.Services
             }
         }
 
-        public async Task<Chapters> UpdateChapterAsync(UpdateChapterRequest chapter, int userId)
+        public async Task<IEnumerable<GetChaptersTitlesByBookIdResponse>> GetChaptersTitlesByBookIdAsync(int bookId)
         {
             try
             {
-                var book = await BookExistsAsync(chapter.BookId);
+                var chapters = await _chapterRepository.GetChaptersByBookIdAsync(bookId);
 
-                await IsBookAuthor(book.UserId, userId);
+                var chaptersTitles = _mapper.Map<IEnumerable<GetChaptersTitlesByBookIdResponse>>(chapters);
+
+                return chaptersTitles;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task<Chapters> UpdateChapterAsync(UpdateChapterRequest chapter, int userId, string? token)
+        {
+            try
+            {
+                var book = await BookExistsAsync(chapter.BookId, token);
+
+                IsBookAuthor(book.UserId, userId);
 
                 var chapterToUpdate = new Chapters
                 {
@@ -122,15 +169,15 @@ namespace Chapter.API.Services
             }
         }
 
-        public async Task<bool> DeleteChapterAsync(int id, int userId)
+        public async Task<bool> DeleteChapterAsync(int id, int userId, string token)
         {
             try
             {
                 var chapter = await _chapterRepository.GetChapterByIdAsync(id);
 
-                var book = await BookExistsAsync(chapter.BookId);
+                var book = await BookExistsAsync(chapter.BookId, token);
 
-                await IsBookAuthor(book.UserId, userId);
+                IsBookAuthor(book.UserId, userId);
 
                 var deleted = await _chapterRepository.DeleteChapterAsync(id);
 
@@ -144,13 +191,13 @@ namespace Chapter.API.Services
             }
         }
 
-        public async Task<bool> DeleteChaptersByBookIdAsync(int bookId, int userId)
+        public async Task<bool> DeleteChaptersByBookIdAsync(int bookId, int userId, string token)
         {
             try
             {
-                var book = await BookExistsAsync(bookId);
+                var book = await BookExistsAsync(bookId, token);
 
-                await IsBookAuthor(book.UserId, userId);
+                IsBookAuthor(book.UserId, userId);
 
                 var deleted = await _chapterRepository.DeleteChaptersByBookIdAsync(bookId);
 
@@ -164,11 +211,11 @@ namespace Chapter.API.Services
             }
         }
 
-        private async Task<Books> BookExistsAsync(int bookId)
+        private async Task<Books> BookExistsAsync(int bookId, string token)
         {
             try
             {
-                var book = await _bookService.GetBookByIdAsync(bookId);
+                var book = await _bookService.GetBookByIdAsync(bookId, token);
 
                 return book;
             }
@@ -179,14 +226,61 @@ namespace Chapter.API.Services
             }
         }
 
-        private async Task<bool> IsBookAuthor(int userBookId, int userId)
+        private async Task IsBookBought(int bookId, int? userId, string? token)
+        {
+            try
+            {
+                await _boughtBooksService.GetBoughtBooksByUserIdByBookId(bookId, userId, token);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private void IsBookAuthor(int userBookId, int? userId)
         {
             if (userBookId != userId) 
             { 
                 throw new UnauthorizedAccessException("You are not authorized to perform this action");
             }
+        }
 
-            return true;
+        // isFreeMatters is bool which if true means that we should check if the book is bought
+        private async Task CheckUser(Chapters chapters, int? userId, string? token)
+        {
+            await BookExistsAsync(chapters.BookId, token);
+
+            if (!chapters.IsFree)
+            {
+                try
+                {
+                    IsUserAuthorized(userId);
+
+                    IsBookAuthor(chapters.AuthorUserId, userId);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    try
+                    {
+                        await IsBookBought(chapters.BookId, userId, token);
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception);
+                        throw;
+                    }
+                }
+            }
+        }
+
+        private void IsUserAuthorized(int? userId)
+        {
+            if (userId == null || userId == -1)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to perform this action");
+            }
         }
     }
 }
