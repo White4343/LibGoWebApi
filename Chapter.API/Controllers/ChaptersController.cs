@@ -7,7 +7,6 @@ using System.Security.Claims;
 using Chapter.API.Models.Requests;
 
 
-// TODO: Add isVisible parameter
 // TODO: Add Caching
 namespace Chapter.API.Controllers
 {
@@ -35,9 +34,11 @@ namespace Chapter.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userId = GetUserId();
+            var userId = GetUserIdStrict();
 
-            var createdChapter = await _chapterService.CreateChapterAsync(chapter, userId);
+            var token = GetToken();
+
+            var createdChapter = await _chapterService.CreateChapterAsync(chapter, userId, token);
 
             return Ok(createdChapter);
         }
@@ -46,7 +47,11 @@ namespace Chapter.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetChapterByIdAsync(int id)
         {
-            var chapter = await _chapterService.GetChapterByIdAsync(id);
+            var userId = GetUserId();
+
+            var token = GetToken();
+
+            var chapter = await _chapterService.GetChapterByIdAsync(id, userId, token);
 
             return Ok(chapter);
         }
@@ -55,7 +60,20 @@ namespace Chapter.API.Controllers
         [HttpGet("book/{bookId}")]
         public async Task<IActionResult> GetChaptersByBookIdAsync(int bookId)
         {
-            var chapters = await _chapterService.GetChaptersByBookIdAsync(bookId);
+            var userId = GetUserId();
+
+            var token = GetToken();
+
+            var chapters = await _chapterService.GetChaptersByBookIdAsync(bookId, userId, token);
+
+            return Ok(chapters);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("book/titles/{bookId}")]
+        public async Task<IActionResult> GetChapterTitlesByBookIdAsync(int bookId)
+        {
+            var chapters = await _chapterService.GetChaptersTitlesByBookIdAsync(bookId);
 
             return Ok(chapters);
         }
@@ -69,9 +87,11 @@ namespace Chapter.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userId = GetUserId();
+            var userId = GetUserIdStrict();
 
-            var updatedChapter = await _chapterService.UpdateChapterAsync(chapter, userId);
+            var token = GetToken();
+
+            var updatedChapter = await _chapterService.UpdateChapterAsync(chapter, userId, token);
 
             return Ok(updatedChapter);
         }
@@ -80,9 +100,11 @@ namespace Chapter.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChapterAsync(int id)
         {
-            var userId = GetUserId();
+            var userId = GetUserIdStrict();
 
-            var deleted = await _chapterService.DeleteChapterAsync(id, userId);
+            var token = GetToken();
+
+            var deleted = await _chapterService.DeleteChapterAsync(id, userId, token);
 
             return Ok(deleted);
         }
@@ -91,14 +113,33 @@ namespace Chapter.API.Controllers
         [HttpDelete("book/{bookId}")]
         public async Task<IActionResult> DeleteChaptersByBookIdAsync(int bookId)
         {
-            var userId = GetUserId();
+            var userId = GetUserIdStrict();
+            
+            var token = GetToken();
 
-            var deleted = await _chapterService.DeleteChaptersByBookIdAsync(bookId, userId);
+            var deleted = await _chapterService.DeleteChaptersByBookIdAsync(bookId, userId, token);
 
             return Ok(deleted);
         }
 
-        private int GetUserId()
+        private string? GetToken()
+        {
+            return HttpContext.Request.Headers["Authorization"].ToString();
+        }
+
+        private int? GetUserId()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return null;
+            }
+
+            return int.Parse(userId);
+        }
+
+        private int GetUserIdStrict()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

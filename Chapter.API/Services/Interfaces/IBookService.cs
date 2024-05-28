@@ -4,6 +4,6 @@ namespace Chapter.API.Services.Interfaces
 {
     public interface IBookService
     {
-        Task<Books> GetBookByIdAsync(int id);
+        Task<Books> GetBookByIdAsync(int id, string token);
     }
 }

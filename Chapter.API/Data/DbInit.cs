@@ -9,12 +9,18 @@ namespace Chapter.API.Data
         {
             return new List<Chapters>
             {
-                new Chapters { Title = "Chapter 1", Content = "Content 1", IsFree = true, CreatedAt = DateTime.UtcNow, UpdatedAt = null, BookId = 1 },
-                new Chapters { Title = "Chapter 2", Content = "Content 2", IsFree = true, CreatedAt = DateTime.UtcNow, UpdatedAt = null, BookId = 1 },
-                new Chapters { Title = "Chapter 3", Content = "Content 3", IsFree = true, CreatedAt = DateTime.UtcNow, UpdatedAt = null, BookId = 1 },
-                new Chapters { Title = "Chapter 1", Content = "Content 1", IsFree = true, CreatedAt = DateTime.UtcNow, UpdatedAt = null, BookId = 2 },
-                new Chapters { Title = "Chapter 2", Content = "Content 2", IsFree = true, CreatedAt = DateTime.UtcNow, UpdatedAt = null, BookId = 2 },
-                new Chapters { Title = "Chapter 3", Content = "Content 3", IsFree = true, CreatedAt = DateTime.UtcNow, UpdatedAt = null, BookId = 2 }
+                new Chapters { Title = "Chapter 1", Content = "Content 1", IsFree = true, 
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = null, AuthorUserId = 1, BookId = 1 },
+                new Chapters { Title = "Chapter 2", Content = "Content 2", IsFree = true, 
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = null, AuthorUserId = 1, BookId = 1 },
+                new Chapters { Title = "Chapter 3", Content = "Content 3", IsFree = true, 
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = null, AuthorUserId = 1, BookId = 1 },
+                new Chapters { Title = "Chapter 1", Content = "Content 1", IsFree = true, 
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = null, AuthorUserId = 1, BookId = 2 },
+                new Chapters { Title = "Chapter 2", Content = "Content 2", IsFree = true, 
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = null, AuthorUserId = 1, BookId = 2 },
+                new Chapters { Title = "Chapter 3", Content = "Content 3", IsFree = true, 
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = null, AuthorUserId = 1, BookId = 2 }
             };
         }
 
