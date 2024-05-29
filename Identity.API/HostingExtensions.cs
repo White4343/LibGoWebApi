@@ -19,7 +19,6 @@ internal static class HostingExtensions
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables().Build();
 
-        WebApiLinks.GenresApi = configuration["GenresApi"];
         WebApiLinks.BooksApi = configuration["BooksApi"];
         WebApiLinks.ChapterApi = configuration["ChapterApi"];
         WebApiLinks.UsersApi = configuration["UsersApi"];
