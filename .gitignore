@@ -373,3 +373,4 @@ FodyWeavers.xsd
 /Identity.API/appsettings.json
 /Identity.API/appsettings.Development.json
 /Stripe.API/appsettings.json
+/Genre.API/Program.cs
