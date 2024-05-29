@@ -35,7 +35,7 @@ namespace User.API.Services
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount = book.Price, // Price is in USD cents.
-                            Currency = "USD",
+                            Currency = "UAH",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Metadata = new Dictionary<string, string>
