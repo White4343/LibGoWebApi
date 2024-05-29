@@ -72,14 +72,37 @@ namespace Book.API
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim("scope", "readers.client");
                 });
+                options.AddPolicy("Genres.Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "genres.admin");
+                });
+                options.AddPolicy("Genres.Client", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "genres.client");
+                });
+                options.AddPolicy("BookGenres.Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "bookgenres.admin");
+                });
+                options.AddPolicy("BookGenres.Client", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "bookgenres.client");
+                });
             });
 
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddHttpClient();
+            builder.Services.AddScoped<IGenresRepository, GenresRepository>();
+            builder.Services.AddScoped<IGenresService, GenresService>();
+            builder.Services.AddScoped<IBookGenresRepository, BookGenresRepository>();
+            builder.Services.AddScoped<IBookGenresService, BookGenresService>();
             builder.Services.AddScoped<IBooksRepository, BooksRepository>();
             builder.Services.AddScoped<IBooksService, BooksService>();
-            builder.Services.AddScoped<IGenresService, GenresService>();
 
             builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
             builder.Services.AddScoped<ICommentsService, CommentsService>();
@@ -131,6 +154,10 @@ namespace Book.API
                                 { "comments.client", "Client Comments API" },
                                 { "readers.admin", "Admin Readers API" },
                                 { "readers.client", "Client Readers API" },
+                                { "genres.admin", "Admin Genres API"},
+                                { "genres.client", "Client Genres API"},                                
+                                { "bookgenres.admin", "Admin BookGenres API"},
+                                { "bookgenres.client", "Client BookGenres API"},
                                 { "nickname", "Client Nickname" },
                                 { "role", "Client Role" },
                                 { "photoUrl", "Client Profile Photo Url" },
@@ -155,6 +182,8 @@ namespace Book.API
                             "books.admin", "books.client", 
                             "comments.admin", "comments.client", 
                             "readers.admin", "readers.client",
+                            "genres.admin", "genres.client",
+                            "bookgenres.admin", "bookgenres.client",
                             "nickname", "role",
                             "photoUrl"
                         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Book.API.Data;
 using Book.API.Data.Entities;
+using Book.API.Models.Dtos;
 using Book.API.Models.Requests;
 using Book.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +71,7 @@ namespace Book.API.Repositories
             return resultBooks;
         }
 
-        public async Task<IEnumerable<Books>> GetBooksByGenreAsync(IEnumerable<BookGenres> bookGenres)
+        public async Task<IEnumerable<Books>> GetBooksByGenreAsync(IEnumerable<BookGenresDto> bookGenres)
         {
             var books = new List<Books>();
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
+using Book.API.Models.Dtos;
 using Book.API.Models.Requests.BooksRequests;
 using Book.API.Models.Responses.BooksResponses;
 using Book.API.Models.Responses.GenresResponses;
@@ -12,14 +13,12 @@ namespace Book.API.Services
     public class BooksService : IBooksService
     {
         private readonly IBooksRepository _booksRepository;
-        private readonly IGenresService _genresService;
         private readonly ILogger<BooksService> _logger;
         private readonly IMapper _mapper;
 
-        public BooksService(IBooksRepository booksRepository, IGenresService genresService, ILogger<BooksService> logger, IMapper mapper)
+        public BooksService(IBooksRepository booksRepository, ILogger<BooksService> logger, IMapper mapper)
         {
             _booksRepository = booksRepository;
-            _genresService = genresService;
             _logger = logger;
             _mapper = mapper;
         }
@@ -76,62 +75,6 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<GetBookByPageResponse> GetBookPageByIdAsync(int id, int userId)
-        {
-            try
-            {
-                var book = await GetBookByIdAsync(id, userId);
-
-                var bookGenres = await _genresService.GetGenresByBookIdAsync(id, null);
-
-                var response = new GetBookByPageResponse
-                {
-                    Genres = bookGenres.Genres
-                };
-
-                if (book.UserId == userId && !book.IsVisible)
-                {
-                    response.Book = book;
-                }
-                else
-                {
-                    throw new UnauthorizedAccessException("You are not the author of this book");
-                }
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        public async Task<GetBooksByGenreResponse> GetGenreBooksPageByIdAsync(int genreId)
-        {
-            try
-            {
-                var bookGenresByGenreResponse = await _genresService.GetBooksByGenreIdAsync(genreId, null);
-
-                var booksByGenre = await _booksRepository.GetBooksByGenreAsync(bookGenresByGenreResponse.Books);
-
-                booksByGenre = booksByGenre.Where(b => b.IsVisible).ToList();
-
-                var response = new GetBooksByGenreResponse
-                {
-                    Genre = bookGenresByGenreResponse.Genre,
-                    Books = booksByGenre
-                };
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
         public async Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id, int userId)
         {
             try
@@ -156,11 +99,28 @@ namespace Book.API.Services
             }
         }
 
+        public async Task<IEnumerable<Books>> GetBooksByGenreAsync(IEnumerable<BookGenresDto> bookGenres)
+        {
+            try
+            {
+                var result = await _booksRepository.GetBooksByGenreAsync(bookGenres);
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<Books>> GetBooksAsync()
         {
             try
             {
                 var books = await _booksRepository.GetBooksAsync();
+
+                books = books.Where(b => b.IsVisible).ToList();
 
                 return books;
             }
