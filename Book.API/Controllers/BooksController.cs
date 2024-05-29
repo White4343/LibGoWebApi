@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 
-// TODO: Add Caching
+// TODO: Add Caching?
 namespace Book.API.Controllers
 {
     [Authorize]
@@ -16,12 +16,14 @@ namespace Book.API.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBooksService _booksService;
+        private readonly IBookGenresService _bookGenresService;
         private readonly ILogger<BooksController> _logger;
 
-        public BooksController(IBooksService booksService, ILogger<BooksController> logger)
+        public BooksController(IBooksService booksService, ILogger<BooksController> logger, IBookGenresService bookGenresService)
         {
             _booksService = booksService;
             _logger = logger;
+            _bookGenresService = bookGenresService;
         }
 
         [Authorize(Policy = "Books.Client")]
@@ -65,7 +67,7 @@ namespace Book.API.Controllers
         {
             int userId = GetUserId();
 
-            var book = await _booksService.GetBookPageByIdAsync(id, userId);
+            var book = await _bookGenresService.GetBookPageByIdAsync(id, userId);
 
             return Ok(book);
         }
@@ -74,7 +76,9 @@ namespace Book.API.Controllers
         [HttpGet("genre/{genreId}")]
         public async Task<IActionResult> GetBooksByGenreIdAsync(int genreId)
         {
-            var books = await _booksService.GetGenreBooksPageByIdAsync(genreId);
+            var userId = GetUserId();
+
+            var books = await _bookGenresService.GetGenreBooksPageByIdAsync(genreId, userId);
 
             return Ok(books);
         }
@@ -88,6 +92,15 @@ namespace Book.API.Controllers
             var books = await _booksService.GetBooksByUserIdAsync(userId, tokenUserId);
 
             return Ok(books);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("books/genres")]
+        public async Task<IActionResult> GetAllBooksWithGenreNamesAsync()
+        {
+            var booksGenres = await _bookGenresService.GetAllBooksWithGenreNamesAsync();
+
+            return Ok(booksGenres);
         }
 
         [Authorize(Policy = "Books.Client")]

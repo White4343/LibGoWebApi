@@ -1,11 +1,15 @@
-﻿using Book.API.Models.Responses;
+﻿using Book.API.Data.Entities;
+using Book.API.Models.Responses;
 using Book.API.Models.Responses.GenresResponses;
 
 namespace Book.API.Services.Interfaces
 {
     public interface IGenresService
     {
-        Task<GetGenresByBookIdResponse> GetGenresByBookIdAsync(int bookId, string token);
-        Task<GetBooksByGenreIdResponse> GetBooksByGenreIdAsync(int genreId, string token);
+        Task<Genres> CreateGenreAsync(Genres request);
+        Task<Genres> GetGenreByIdAsync(int id);
+        Task<IEnumerable<Genres>> GetGenresAsync();
+        Task<Genres> UpdateGenreAsync(Genres request);
+        Task DeleteGenreAsync(int id);
     }
 }

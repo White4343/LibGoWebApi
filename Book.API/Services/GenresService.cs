@@ -1,61 +1,96 @@
 ﻿using Book.API.Models.Responses;
 using Book.API.Services.Interfaces;
 using System.Net.Http.Headers;
+using Book.API.Data.Entities;
 using SendGrid.Helpers.Errors.Model;
 using Book.API.Models.Responses.GenresResponses;
+using Book.API.Repositories.Interfaces;
 
 namespace Book.API.Services
 {
     public class GenresService : IGenresService
     {
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly IGenresRepository _genresRepository;
         private readonly ILogger<GenresService> _logger;
 
-        public GenresService(IHttpClientFactory clientFactory, ILogger<GenresService> logger)
+        public GenresService(IGenresRepository genresRepository, ILogger<GenresService> logger)
         {
-            _clientFactory = clientFactory;
+            _genresRepository = genresRepository;
             _logger = logger;
         }
 
 
-        public async Task<GetGenresByBookIdResponse> GetGenresByBookIdAsync(int bookId, string token)
+        public async Task<Genres> CreateGenreAsync(Genres request)
         {
-            var client = await CreateClient(token);
-            var response = await client.GetAsync($"{WebApiLinks.GenresApi}/api/v1/bookgenres/book/{bookId}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var genres = await response.Content.ReadFromJsonAsync<GetGenresByBookIdResponse>();
+                var result = await _genresRepository.CreateGenreAsync(request);
 
-                return genres;
+                return result;
             }
-
-            throw new NotFoundException($"Genres not found for book with id {bookId}");
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        public async Task<GetBooksByGenreIdResponse> GetBooksByGenreIdAsync(int genreId, string token)
+        public async Task<Genres> GetGenreByIdAsync(int id)
         {
-            var client = await CreateClient(token);
-            var response = await client.GetAsync($"{WebApiLinks.GenresApi}/api/v1/bookgenres/genre/{genreId}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var books = await response.Content.ReadFromJsonAsync<GetBooksByGenreIdResponse>();
+                var result = await _genresRepository.GetGenreByIdAsync(id);
 
-                return books;
+                return result;
             }
-
-            throw new NotFoundException($"Books not found for genre with id {genreId}");
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        private async Task<HttpClient> CreateClient(string? token)
+        public async Task<IEnumerable<Genres>> GetGenresAsync()
         {
-            var client = _clientFactory.CreateClient("GenresService");
+            try
+            {
+                var result = await _genresRepository.GetGenresAsync();
 
-            if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
-            return client;
+        public async Task<Genres> UpdateGenreAsync(Genres request)
+        {
+            try
+            {
+                var result = await _genresRepository.UpdateGenreAsync(request);
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task DeleteGenreAsync(int id)
+        {
+            try
+            {
+                await _genresRepository.DeleteGenreAsync(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

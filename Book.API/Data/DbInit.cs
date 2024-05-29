@@ -73,6 +73,40 @@ namespace Book.API.Data
             };
         }
 
+        private static IEnumerable<Genres> GetPreconfiguredGenres()
+        {
+            return new List<Genres>
+            {
+                new Genres { Name = "Science Fiction" },
+                new Genres { Name = "Fantasy" },
+                new Genres { Name = "Mystery" },
+                new Genres { Name = "Thriller" },
+                new Genres { Name = "Romance" },
+                new Genres { Name = "Western" },
+                new Genres { Name = "Dystopian" },
+                new Genres { Name = "Contemporary" },
+                new Genres { Name = "Horror" },
+                new Genres { Name = "Literary Fiction" }
+            };
+        }
+
+        private static IEnumerable<BookGenres> GetPreconfiguredBookGenres()
+        {
+            return new List<BookGenres>
+            {
+                new BookGenres { BookId = 1, GenreId = 1 },
+                new BookGenres { BookId = 1, GenreId = 2 },
+                new BookGenres { BookId = 2, GenreId = 3 },
+                new BookGenres { BookId = 2, GenreId = 4 },
+                new BookGenres { BookId = 3, GenreId = 5 },
+                new BookGenres { BookId = 3, GenreId = 6 },
+                new BookGenres { BookId = 4, GenreId = 7 },
+                new BookGenres { BookId = 4, GenreId = 8 },
+                new BookGenres { BookId = 5, GenreId = 9 },
+                new BookGenres { BookId = 5, GenreId = 10 }
+            };
+        }
+
         public static async Task InitializeAsync(AppDbContext context)
         {
             await context.Database.EnsureCreatedAsync();
@@ -90,6 +124,16 @@ namespace Book.API.Data
             if (!await context.Readers.AnyAsync())
             {
                 await context.Readers.AddRangeAsync(GetPreconfiguredReaders());
+            }
+
+            if (!await context.Genres.AnyAsync())
+            {
+                await context.Genres.AddRangeAsync(GetPreconfiguredGenres());
+            }
+
+            if (!await context.BookGenres.AnyAsync())
+            {
+                await context.BookGenres.AddRangeAsync(GetPreconfiguredBookGenres());
             }
 
             await context.SaveChangesAsync();

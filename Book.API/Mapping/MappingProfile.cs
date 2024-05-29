@@ -31,6 +31,9 @@ namespace Book.API.Mapping
 
             CreateMap<Readers,ReadersDto>();
             CreateMap<ReadersDto, Readers>();
+
+            CreateMap<BookGenres, BookGenresDto>();
+            CreateMap<BookGenresDto, BookGenres>();
         }
     }
 }

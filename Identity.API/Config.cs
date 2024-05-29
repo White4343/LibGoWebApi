@@ -39,24 +39,6 @@ public static class Config
         {
             new Client
             {
-                ClientId = "genresswaggerui",
-                ClientName = "Genres Swagger UI",
-                AllowedGrantTypes = GrantTypes.Implicit,
-                AllowAccessTokensViaBrowser = true,
-
-                RedirectUris = {WebApiLinks.GenresApi + "/swagger/oauth2-redirect.html" },
-                PostLogoutRedirectUris = {WebApiLinks.GenresApi + "/swagger/" },
-
-                AllowedScopes =
-                {
-                    "genres.admin",
-                    "genres.client",
-                    "bookgenres.admin",
-                    "bookgenres.client"
-                }
-            },
-            new Client
-            {
                 ClientId = "booksswaggerui",
                 ClientName = "Books Swagger UI",
                 AllowedGrantTypes = GrantTypes.Implicit,
@@ -71,7 +53,9 @@ public static class Config
                     "books.admin",
                     "books.client",
                     "bookgenres.admin",
-                    "bookgenres.client",
+                    "bookgenres.client",                    
+                    "genres.admin",
+                    "genres.client",
                     "comments.client",
                     "comments.admin",
                     "readers.client",

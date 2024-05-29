@@ -92,7 +92,6 @@ namespace User.API.Controllers
 
             _logger.LogInformation($"User {userId} bought book {bookId}");
 
-            // TODO: Fix AppDbContext Error
             await _checkoutService.SuccessfulCheckoutSessionAsync(bookId, userId);
 
             return Redirect(s_wasmClientURL + "success");

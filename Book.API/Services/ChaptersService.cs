@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using Book.API.Data.Entities;
 using SendGrid.Helpers.Errors.Model;
 
-// TODO: When chapter is not available, because book is not bough, we should return NotFoundException
 namespace Book.API.Services
 {
     public class ChaptersService : IChapterService
