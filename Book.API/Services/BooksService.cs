@@ -142,6 +142,8 @@ namespace Book.API.Services
 
                 var bookToUpdate = _mapper.Map<Books>(bookRequest);
 
+                bookToUpdate.UserId = userId;
+
                 await _booksRepository.UpdateBookAsync(bookToUpdate);
 
                 return bookToUpdate;
