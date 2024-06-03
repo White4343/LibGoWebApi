@@ -19,7 +19,9 @@ namespace Chapter.API.Services
 
         public async Task<Books> GetBookByIdAsync(int id, string? token)
         {
-            var client = await CreateClient(token);
+            string? tokenValue = token.Replace("Bearer ", "");
+
+            var client = await CreateClient(tokenValue);
 
             var response = await client.GetAsync($"{WebApiLinks.BookApi}/api/v1/books/{id}");
 

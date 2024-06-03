@@ -30,7 +30,7 @@ namespace User.API.Controllers
         }
 
         [HttpPost("{id}")]
-        public async Task<ActionResult> CheckoutOrder(int id, [FromServices] IServiceProvider sp)
+        public async Task<ActionResult> CheckoutOrder(int id, [FromServices] IServiceProvider sp, [FromBody] bool? isSubscription)
         {
             var referer = Request.Headers.Referer;
             s_wasmClientURL = referer[0];
@@ -50,7 +50,19 @@ namespace User.API.Controllers
             if (thisApiUrl is not null)
             {
                 var userId = GetUserId();
-                var sessionId = await CheckOut(id, userId, thisApiUrl);
+
+                string sessionId = string.Empty;
+
+                if (isSubscription.Equals(false) || isSubscription == null)
+                {
+                    sessionId = await CheckBookOut(id, userId, thisApiUrl);
+                }
+                else
+                {
+                    sessionId = await CheckSubscriptionOut(id, userId, thisApiUrl);
+                }
+
+
                 var pubKey = _configuration["Stripe:PubKey"];
 
                 var checkoutOrderResponse = new CheckoutOrderResponse()
@@ -68,13 +80,22 @@ namespace User.API.Controllers
         }
 
         [NonAction]
-        public async Task<string> CheckOut(int bookId, int userId, string thisApiUrl)
+        public async Task<string> CheckBookOut(int bookId, int userId, string thisApiUrl)
         {
-            var serviceId = await _checkoutService.CreateCheckoutSessionAsync(bookId, userId, thisApiUrl, s_wasmClientURL);
+            var serviceId = await _checkoutService.CreateBookCheckoutSessionAsync(bookId, userId, thisApiUrl, s_wasmClientURL);
 
             return serviceId;
         }
 
+        [NonAction]
+        public async Task<string> CheckSubscriptionOut(int subId, int userId, string thisApiUrl)
+        {
+            var serviceId = await _checkoutService.CreateSubscriptionCheckoutSessionAsync(subId, userId, thisApiUrl, s_wasmClientURL);
+
+            return serviceId;
+        }
+
+        [AllowAnonymous]
         [HttpGet("success")]
         // Automatic query parameter handling from ASP.NET.
         public async Task<ActionResult> CheckoutSuccess(string sessionId)
@@ -87,12 +108,22 @@ namespace User.API.Controllers
             var productService = new ProductService();
             var product = productService.Get(lineItems.Data[0].Price.ProductId);
 
-            var bookId = Int32.Parse(product.Metadata["bookId"]);
+            var IsBookId = Int32.TryParse(product.Metadata["bookId"], out int bookId);
+            var IsSubId = Int32.TryParse(product.Metadata["subscriptionId"], out int subId);
             var userId = Int32.Parse(product.Metadata["userId"]);
 
-            _logger.LogInformation($"User {userId} bought book {bookId}");
+            if (IsBookId)
+            {
+                _logger.LogInformation($"User {userId} bought book {bookId}");
 
-            await _checkoutService.SuccessfulCheckoutSessionAsync(bookId, userId);
+                await _checkoutService.SuccessfulBookCheckoutSessionAsync(bookId, userId);
+            } 
+            else if (IsSubId)
+            {
+                _logger.LogInformation($"User {userId} bought subscription {sessionId}");
+
+                await _checkoutService.SuccessfulSubCheckoutSessionAsync(subId, userId);
+            }
 
             return Redirect(s_wasmClientURL + "success");
         }

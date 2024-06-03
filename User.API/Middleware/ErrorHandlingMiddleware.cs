@@ -28,6 +28,10 @@ namespace User.API.Middleware
             catch (UnauthorizedAccessException e)
             {
                 await CreateContext(context, e, 401);
+            }            
+            catch (BadRequestException e)
+            {
+                await CreateContext(context, e, 400);
             }
             catch (FormatException e)
             {

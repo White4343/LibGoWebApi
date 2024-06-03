@@ -8,6 +8,7 @@ using User.API.Services.Interfaces;
 
 namespace User.API.Controllers
 {
+    // TODO: Add user find by nickname
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]

@@ -64,6 +64,11 @@ namespace User.API
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserValidationRepository, UserRepository>();
 
+            builder.Services.AddScoped<IUserSubscriptionsRepository, UserSubscriptionsRepository>();
+            builder.Services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
+            builder.Services.AddScoped<ISubscriptionsService, SubscriptionsService>();
+            builder.Services.AddScoped<IUserSubscriptionsService, UserSubscriptionsService>();
+
             builder.Services.AddScoped<IBooksService, BooksService>();
             builder.Services.AddScoped<ICheckoutService, CheckoutService>();
             builder.Services.AddScoped<IUserService, UserService>();

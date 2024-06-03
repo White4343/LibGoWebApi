@@ -68,8 +68,8 @@ namespace Book.API.Data
         {
             return new List<Readers>
             {
-                new Readers { Status = "Reading", NotifyEnabled = true, UserId = 3, BookId = 1, ChapterId = 1 },
-                new Readers { Status = "Abandoned", NotifyEnabled = true, UserId = 3, BookId = 2, ChapterId = 2 }
+                new Readers { Status = "Reading", IsVisible = true, NotifyEnabled = true, UserId = 3, BookId = 1, ChapterId = 1 },
+                new Readers { Status = "Abandoned", IsVisible = false, NotifyEnabled = true, UserId = 3, BookId = 2, ChapterId = 2 }
             };
         }
 
