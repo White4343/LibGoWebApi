@@ -10,6 +10,7 @@ using SendGrid.Helpers.Errors.Model;
 
 namespace Book.API.Services
 {
+    // TODO: Patch Requests?
     public class BooksService : IBooksService
     {
         private readonly IBooksRepository _booksRepository;
@@ -131,15 +132,15 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<Books> UpdateBookAsync(UpdateBooksRequest book, int userId)
+        public async Task<Books> UpdateBookAsync(UpdateBooksRequest bookRequest, int userId)
         {
             try
             { 
-                await BookExists(book.Id, userId);
+                var book = await BookExists(bookRequest.Id, userId);
 
-                await IsBookAuthor(book.UserId, userId);
+                IsBookAuthor(book.UserId, userId);
 
-                var bookToUpdate = _mapper.Map<Books>(book);
+                var bookToUpdate = _mapper.Map<Books>(bookRequest);
 
                 await _booksRepository.UpdateBookAsync(bookToUpdate);
 
@@ -158,7 +159,7 @@ namespace Book.API.Services
             {
                 var book = await BookExists(id, userId);
 
-                await IsBookAuthor(book.UserId, userId);
+                IsBookAuthor(book.UserId, userId);
 
                 var deleted = await _booksRepository.DeleteBookAsync(id);
 
@@ -186,7 +187,7 @@ namespace Book.API.Services
             }
         }
 
-        private async Task IsBookAuthor(int bookUserId, int userId)
+        private void IsBookAuthor(int bookUserId, int userId)
         {
             if (bookUserId == userId)
                 return;

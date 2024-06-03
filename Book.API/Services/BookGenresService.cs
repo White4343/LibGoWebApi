@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
 using Book.API.Models.Dtos;
+using Book.API.Models.Requests.BookGenresRequests;
 using Book.API.Models.Responses.BooksResponses;
 using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories;
@@ -29,13 +30,19 @@ namespace Book.API.Services
         }
 
 
-        public async Task<BookGenresDto> CreateBookGenreAsync(BookGenres bookGenre, int tokenUserId)
+        public async Task<BookGenresDto> CreateBookGenreAsync(CreateBookGenresRequests bookGenre, int tokenUserId)
         {
             try
             {
+                var bookGenreRequest = new BookGenres
+                {
+                    BookId = bookGenre.BookId,
+                    GenreId = bookGenre.GenreId
+                };
+
                 await _booksService.GetBookByIdAsync(bookGenre.BookId, tokenUserId);
 
-                var createdBookGenre = await _bookGenresRepository.CreateBookGenreAsync(bookGenre);
+                var createdBookGenre = await _bookGenresRepository.CreateBookGenreAsync(bookGenreRequest);
 
                 var result = _mapper.Map<BookGenresDto>(createdBookGenre);
 
