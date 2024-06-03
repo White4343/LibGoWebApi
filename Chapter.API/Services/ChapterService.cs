@@ -40,6 +40,7 @@ namespace Chapter.API.Services
                 {
                     Title = chapter.Title,
                     Content = chapter.Content,
+                    CreatedAt = DateTime.UtcNow,
                     IsFree = chapter.IsFree,
                     BookId = chapter.BookId,
                     AuthorUserId = userId
