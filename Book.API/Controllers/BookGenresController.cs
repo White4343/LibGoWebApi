@@ -4,6 +4,7 @@ using Book.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Book.API.Models.Requests.BookGenresRequests;
 
 namespace Book.API.Controllers
 {
@@ -24,7 +25,7 @@ namespace Book.API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateBookGenreAsync([FromBody] BookGenres bookGenre)
+        public async Task<IActionResult> CreateBookGenreAsync([FromBody] CreateBookGenresRequests bookGenre)
         {
             if (!ModelState.IsValid)
             {

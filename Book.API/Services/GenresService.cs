@@ -5,6 +5,7 @@ using Book.API.Data.Entities;
 using SendGrid.Helpers.Errors.Model;
 using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories.Interfaces;
+using Book.API.Models.Requests.GenresRequests;
 
 namespace Book.API.Services
 {
@@ -20,11 +21,16 @@ namespace Book.API.Services
         }
 
 
-        public async Task<Genres> CreateGenreAsync(Genres request)
+        public async Task<Genres> CreateGenreAsync(CreateGenreRequest request)
         {
             try
             {
-                var result = await _genresRepository.CreateGenreAsync(request);
+                var genre = new Genres
+                {
+                    Name = request.Name
+                };
+                
+                var result = await _genresRepository.CreateGenreAsync(genre);
 
                 return result;
             }

@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Book.API.Data.Entities;
+using Book.API.Models.Requests.GenresRequests;
 using Book.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace Book.API.Controllers
 
         [Authorize(Policy = "Genres.Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateGenreAsync([FromBody] Genres genre)
+        public async Task<IActionResult> CreateGenreAsync([FromBody] CreateGenreRequest genre)
         {
             if (!ModelState.IsValid)
             {

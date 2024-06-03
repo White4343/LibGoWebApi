@@ -2,6 +2,7 @@
 using Book.API.Data.Entities;
 using Book.API.Models.Dtos;
 using Book.API.Models.Requests.BooksRequests;
+using Book.API.Models.Requests.GenresRequests;
 using Book.API.Models.Requests.ReadersRequests;
 using Book.API.Models.Responses.ReadersResponses;
 
@@ -34,6 +35,9 @@ namespace Book.API.Mapping
 
             CreateMap<BookGenres, BookGenresDto>();
             CreateMap<BookGenresDto, BookGenres>();
+
+            CreateMap<Genres, CreateGenreRequest>();
+            CreateMap<CreateGenreRequest, Genres>();
         }
     }
 }
