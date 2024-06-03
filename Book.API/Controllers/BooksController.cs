@@ -7,6 +7,8 @@ using System.Security.Claims;
 
 
 // TODO: Add Caching?
+// TODO: Add search by book name
+// TODO: Sort by name A=>Z, Z=>A, date, price
 namespace Book.API.Controllers
 {
     [Authorize]
