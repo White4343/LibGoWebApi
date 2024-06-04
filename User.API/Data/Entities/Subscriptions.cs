@@ -15,9 +15,9 @@
 
         public DateTime PublishDate { get; set; }
 
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
 
-        public IEnumerable<int> BookIds { get; set; }
+        public int[] BookIds { get; set; }
 
         public int UserId { get; set; }
     }

@@ -18,7 +18,7 @@
 
         public int UserId { get; set; }
 
-        public IEnumerable<int> BookIds { get; set; }
+        public int[] BookIds { get; set; }
 
         public int AuthorUserId { get; set; }
     }
