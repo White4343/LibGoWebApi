@@ -27,9 +27,18 @@ namespace User.API.Services
         {
             try
             {
-                await IsAuthorHasSubscription(tokenUserId);
+                try
+                {
+                    await IsAuthorHasSubscription(tokenUserId);
 
-                if (request.BookIds.Select(x => x).Distinct().Count() != request.BookIds.Length - 1)
+                    throw new BadRequestException($"You can't create Subscription when you already have one.");
+                }
+                catch (NotFoundException e)
+                {
+
+                }
+
+                if (request.BookIds.Select(x => x).Distinct().Count() != request.BookIds.Length)
                 {
                     throw new BadRequestException($"You can't create Subscription when book list contains duplicates.");
                 }
@@ -43,6 +52,8 @@ namespace User.API.Services
                     Description = request.Description,
                     Price = request.Price,
                     BookIds = request.BookIds,
+                    PublishDate = DateTime.UtcNow,
+                    UpdateDate = null,
                     UserId = tokenUserId
                 };
 
@@ -151,7 +162,7 @@ namespace User.API.Services
                 subscription.Name = request.Name;
                 subscription.Description = request.Description;
                 subscription.Price = request.Price;
-                subscription.BookIds = request.BookIds.ToList();
+                subscription.BookIds = request.BookIds;
 
                 var updatedSubscription = await _subscriptionsRepository.UpdateSubscriptionAsync(subscription);
 
@@ -240,7 +251,7 @@ namespace User.API.Services
             }
         }
 
-        private async Task IsAuthorHasSubscription(int tokenUserId)
+        private async Task<Subscriptions> IsAuthorHasSubscription(int tokenUserId)
         {
             var subscription = await GetSubscriptionByUserIdAsync(tokenUserId);
 
@@ -248,6 +259,8 @@ namespace User.API.Services
             {
                 throw new BadRequestException($"You can't create Subscription when you already have one.");
             }
+
+            return subscription;
         }
     }
 }

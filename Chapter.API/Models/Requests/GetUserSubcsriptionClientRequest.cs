@@ -1,6 +1,6 @@
-﻿namespace User.API.Data.Entities
+﻿namespace Chapter.API.Models.Requests
 {
-    public class UserSubscriptions
+    public class GetUserSubcsriptionClientRequest
     {
         public int Id { get; set; }
 
@@ -11,8 +11,6 @@
         public DateTime EndDate { get; set; }
 
         public int PaidPrice { get; set; }
-
-        public bool IsPaidToAuthor { get; set; }
 
         public int SubscriptionId { get; set; }
 

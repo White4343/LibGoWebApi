@@ -32,6 +32,10 @@ namespace Chapter.API.Middleware
             {
                 await CreateContext(context, e, 400);
             }
+            catch (BadRequestException e)
+            {
+                await CreateContext(context, e, 400);
+            }
             catch (Exception e)
             {
                 await CreateContext(context, e, 500);
