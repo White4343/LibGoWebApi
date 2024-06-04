@@ -38,6 +38,29 @@ namespace Chapter.API.Services
             throw new NotFoundException($"Bought books with book id {bookId} and user id {userId} not found");
         }
 
+        public async Task<GetUserSubcsriptionClientRequest> GetUserSubscriptionByUserId(int userId, int bookId, string? token)
+        {
+            string? tokenValue = token.Replace("Bearer ", "");
+
+            var client = await CreateClient(tokenValue);
+
+            var response = await client.GetAsync($"{WebApiLinks.UserApi}/api/v1/usersubscriptions/user/{userId}/book/{bookId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var subscription = await response.Content.ReadFromJsonAsync<GetUserSubcsriptionClientRequest>();
+
+                if (!subscription.IsActive)
+                {
+                    throw new BadRequestException("Subscription is not active");
+                }
+
+                return subscription;
+            }
+
+            throw new NotFoundException($"Subscription with user id {userId} not found");
+        }
+
         private async Task<HttpClient> CreateClient(string? token)
         {
             var client = _httpClientFactory.CreateClient("BooksService");

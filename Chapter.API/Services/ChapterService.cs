@@ -28,6 +28,7 @@ namespace Chapter.API.Services
             _mapper = mapper;
         }
 
+        // TODO: If book price is 0, then chapter is free
         public async Task<Chapters> CreateChapterAsync(CreateChapterRequest chapter, int userId, string? token)
         {
             try
@@ -240,6 +241,19 @@ namespace Chapter.API.Services
             }
         }
 
+        private async Task IsSubscriptionActive(int userId, int bookId, string? token)
+        {
+            try
+            {
+                await _boughtBooksService.GetUserSubscriptionByUserId(userId, bookId, token);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         private void IsBookAuthor(int userBookId, int? userId)
         {
             if (userBookId != userId) 
@@ -248,7 +262,7 @@ namespace Chapter.API.Services
             }
         }
 
-        // isFreeMatters is bool which if true means that we should check if the book is bought
+        // TODO: check if user have subscription
         private async Task CheckUser(Chapters chapters, int? userId, string? token)
         {
             await BookExistsAsync(chapters.BookId, token);
@@ -269,8 +283,15 @@ namespace Chapter.API.Services
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine(exception);
-                        throw;
+                        try
+                        {
+                            await IsSubscriptionActive(Convert.ToInt32(userId), chapters.BookId, token);
+                        }
+                        catch (Exception e1)
+                        {
+                            Console.WriteLine(e1);
+                            throw;
+                        }
                     }
                 }
             }
