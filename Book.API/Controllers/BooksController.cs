@@ -93,7 +93,6 @@ namespace Book.API.Controllers
             return Ok(books);
         }
 
-        // TODO: Sort by name A=>Z, Z=>A, date, price
         [AllowAnonymous]
         [HttpPost("books/genres")]
         public async Task<IActionResult> GetAllBooksWithGenreNamesAsync([FromBody] BookFilters? filters)

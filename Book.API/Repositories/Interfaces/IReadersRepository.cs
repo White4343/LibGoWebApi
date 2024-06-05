@@ -11,6 +11,7 @@ namespace Book.API.Repositories.Interfaces
         Task<IEnumerable<Readers>> GetReadersAsync();
         Task<IEnumerable<Readers>> GetReadersByUserIdAsync(int id);
         Task<IEnumerable<Readers>> GetReadersByBookIdAsync(int id);
+        Task<double> GetBooksRatingByBookIdAsync(int bookId);
         Task<Readers> UpdateReaderAsync(Readers reader);
         Task<Readers> PatchReaderAsync(PatchReadersRequest reader);
         Task<Readers> PatchReaderChapterIdAsync(int id, int chapterId);

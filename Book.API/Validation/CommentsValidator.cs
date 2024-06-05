@@ -7,6 +7,7 @@ namespace Book.API.Validation
 {
     public class CommentsValidator : AbstractValidator<Comments>
     {
+        // TODO: Add validation for bad words
         public CommentsValidator()
         {
             RuleFor(x => x.Content).NotNull().WithMessage("Content is required")

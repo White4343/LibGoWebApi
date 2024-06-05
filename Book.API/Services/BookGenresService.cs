@@ -18,19 +18,21 @@ namespace Book.API.Services
         private readonly IBookGenresRepository _bookGenresRepository;
         private readonly IBooksService _booksService;
         private readonly IGenresService _genresService;
+        private readonly IReadersRepository _readersRepository;
         private readonly ILogger<BookGenresService> _logger;
         private readonly IMapper _mapper;
 
         public BookGenresService(IBookGenresRepository bookGenresRepository, 
-            IBooksService booksService, ILogger<BookGenresService> logger, IMapper mapper, IGenresService genresService)
+            IBooksService booksService, ILogger<BookGenresService> logger, IMapper mapper, IGenresService genresService,
+            IReadersRepository readersRepository)
         {
             _bookGenresRepository = bookGenresRepository;
             _booksService = booksService;
             _logger = logger;
             _mapper = mapper;
             _genresService = genresService;
+            _readersRepository = readersRepository;
         }
-
 
         public async Task<BookGenresDto> CreateBookGenreAsync(CreateBookGenresRequests bookGenre, int tokenUserId)
         {
@@ -182,9 +184,12 @@ namespace Book.API.Services
 
                 var bookGenres = await GetBookGenresWithGenreNamesByBookId(id, userId);
 
+                var rating = await _readersRepository.GetBooksRatingByBookIdAsync(id);
+
                 var response = new GetBookByPageResponse
                 {
-                    Genres = bookGenres.Genres
+                    Genres = bookGenres.Genres,
+                    Rating = rating,
                 };
 
                 if (book.UserId != userId && !book.IsVisible)
@@ -215,10 +220,19 @@ namespace Book.API.Services
 
                 booksByGenre = booksByGenre.Where(b => b.IsVisible).ToList();
 
+                var books = _mapper.Map<IEnumerable<BooksDto>>(booksByGenre);
+
+                foreach (var book in books)
+                {
+                    var rating = await _readersRepository.GetBooksRatingByBookIdAsync(book.Id);
+
+                    book.Rating = rating;
+                }
+
                 var response = new GetBooksByGenreResponse
                 {
                     Genre = bookGenresByGenreResponse.Genre,
-                    Books = booksByGenre
+                    Books = books
                 };
 
                 return response;
@@ -342,10 +356,12 @@ namespace Book.API.Services
                     try
                     {
                         var bookGenre = await GetBookGenresWithGenreNamesByBookId(book.Id, book.UserId);
+                        var rating = await _readersRepository.GetBooksRatingByBookIdAsync(book.Id);
 
                         var item = new GetBooksWithGenreNamesResponse
                         {
                             Book = book,
+                            Rating = rating,
                             Genres = bookGenre.Genres
                         };
 

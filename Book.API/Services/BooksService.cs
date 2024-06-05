@@ -19,20 +19,26 @@ namespace Book.API.Services
         private readonly ILogger<BooksService> _logger;
         private readonly IMapper _mapper;
         private readonly IConnectionMultiplexer _redisConnection;
+        private readonly IUsersService _usersService;
 
         public BooksService(IBooksRepository booksRepository, ILogger<BooksService> logger, IMapper mapper,
-            IConnectionMultiplexer redisConnection)
+            IConnectionMultiplexer redisConnection, IUsersService usersService)
         {
             _booksRepository = booksRepository;
             _logger = logger;
             _mapper = mapper;
             _redisConnection = redisConnection;
+            _usersService = usersService;
         }
 
         public async Task<Books> CreateBookAsync(CreateBooksRequest book, int userId)
         {
             try
             {
+                CheckPrice(book.Price);
+
+                await UsersExists(book.CoAuthorIds);
+
                 var bookToCreate = new Books
                 {
                     Name = book.Name,
@@ -170,6 +176,12 @@ namespace Book.API.Services
             { 
                 var book = await BookExists(bookRequest.Id, userId);
 
+                await UsersExists(book.CoAuthorIds);
+
+                var val = int.TryParse(bookRequest.Price.ToString(), out var price);
+
+                CheckPrice(price);
+
                 IsBookAuthor(book.UserId, userId);
 
                 var bookToUpdate = _mapper.Map<Books>(bookRequest);
@@ -228,6 +240,35 @@ namespace Book.API.Services
                 return;
 
             throw new UnauthorizedAccessException("You are not the author of this book");
+        }
+
+        private void CheckPrice(int price)
+        {
+            if (price < 100 || price > 500)
+            {
+                throw new FormatException("Price is too low or too high. Price must be between 100 and 500");
+            }
+        }
+
+        private async Task UsersExists(int[] userIds)
+        {
+            try
+            {
+                if (userIds.Distinct().Count() != userIds.Length)
+                {
+                    throw new FormatException("CoAuthors must be unique");
+                }
+
+                foreach (var id in userIds)
+                {
+                    await _usersService.GetUserByIdAsync(id);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

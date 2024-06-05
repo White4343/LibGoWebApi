@@ -6,6 +6,7 @@ using Book.API.Models.Requests.ReadersRequests;
 using Book.API.Models.Responses.ReadersResponses;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Errors.Model;
 
 namespace Book.API.Services
@@ -45,6 +46,7 @@ namespace Book.API.Services
                 var mappedReader = _mapper.Map<Readers>(reader);
 
                 mappedReader.UserId = tokenUserId;
+                mappedReader.Rating = null;
 
                 var createdReader = await _readersRepository.CreateReaderAsync(mappedReader);
 
@@ -71,7 +73,13 @@ namespace Book.API.Services
                     {
                         var book = await _booksService.GetBookByIdAsync(reader.BookId, tokenUserId);
 
+                        var rating = reader.Rating != null ? reader.Rating : 0;
+
                         var mappedBook = _mapper.Map<BooksDto>(book);
+
+                        var ratingDouble = Convert.ToDouble(rating);
+                        
+                        mappedBook.Rating = ratingDouble;
 
                         books.Add(mappedBook);
                     }
@@ -116,6 +124,8 @@ namespace Book.API.Services
         {
             try
             {
+                CheckRating(readerUpdate.Rating);
+
                 var reader = await ReaderExists(readerUpdate.Id);
 
                 IsReaderAuthor(userId, reader.UserId);
@@ -139,6 +149,9 @@ namespace Book.API.Services
         {
             try
             {
+                if (readerToPatchRequest.Rating != null)
+                    CheckRating(Convert.ToInt32(readerToPatchRequest.Rating));
+                
                 var reader = await ReaderExists(userId);
 
                 IsReaderAuthor(userId, reader.UserId);
@@ -280,6 +293,14 @@ namespace Book.API.Services
             if (chapterBookId != bookId)
             {
                 throw new UnauthorizedAccessException("Chapter is not part of this book");
+            }
+        }
+
+        private void CheckRating(int value)
+        {
+            if (value < 1 || value > 5)
+            {
+                throw new ArgumentException("Rating must be between 1 and 5");
             }
         }
     }
