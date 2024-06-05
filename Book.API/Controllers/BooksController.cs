@@ -133,7 +133,9 @@ namespace Book.API.Controllers
         {
             int userId = GetUserId();
 
-            var deleted = await _booksService.DeleteBookAsync(id, userId);
+            string token = GetToken();
+
+            var deleted = await _booksService.DeleteBookAsync(id, userId, token);
 
             return Ok(deleted);
         }
@@ -148,6 +150,11 @@ namespace Book.API.Controllers
             }
 
             return int.Parse(userId);
+        }
+
+        private string? GetToken()
+        {
+            return HttpContext.Request.Headers["Authorization"].ToString();
         }
     }
 }

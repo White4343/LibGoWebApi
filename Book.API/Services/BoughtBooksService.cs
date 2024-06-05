@@ -34,13 +34,13 @@ namespace Book.API.Services
             }
         }
 
-        public async Task GetUserSubscriptionByBookId(int userId, string? token)
+        public async Task GetUserSubscriptionByBookId(int bookId, string? token)
         {
             string? tokenValue = token.Replace("Bearer ", "");
 
             var client = await CreateClient(tokenValue);
 
-            var response = await client.GetAsync($"{WebApiLinks.UsersApi}/api/v1/usersubscriptions/user/{userId}/book/{bookId}");
+            var response = await client.GetAsync($"{WebApiLinks.UsersApi}/api/v1/usersubscriptions/book/{bookId}");
 
             if (response.IsSuccessStatusCode)
             {

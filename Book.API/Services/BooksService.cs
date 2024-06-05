@@ -201,7 +201,6 @@ namespace Book.API.Services
             }
         }
 
-        // TODO: If book is bought once or more, then just delete userId, disable book from buying
         public async Task<bool> DeleteBookAsync(int id, int userId, string token)
         {
             try
@@ -230,6 +229,8 @@ namespace Book.API.Services
                 book.UserId = 0;
 
                 await _booksRepository.UpdateBookAsync(book);
+
+                return true;
             }
             catch (Exception e)
             {
