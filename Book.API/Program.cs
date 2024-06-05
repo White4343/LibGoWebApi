@@ -10,6 +10,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace Book.API
 {
@@ -20,6 +21,12 @@ namespace Book.API
             var configuration = GetConfiguration();
 
             var builder = WebApplication.CreateBuilder(args);
+
+            var redisConfiguration = new ConfigurationOptions
+            { 
+                EndPoints = { { "localhost", 90 } },
+                AbortOnConnectFail = false
+            };
 
             WebApiLinks.GenresApi = configuration["GenresApi"];
             WebApiLinks.ChaptersApi = configuration["ChaptersApi"];
@@ -116,6 +123,8 @@ namespace Book.API
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfiguration));
 
             builder.Services.AddCors(options =>
             {
