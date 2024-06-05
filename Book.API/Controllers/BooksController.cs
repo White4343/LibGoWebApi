@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 
-// TODO: Add Caching?
 // TODO: Add search by book name
 // TODO: Sort by name A=>Z, Z=>A, date, price
 namespace Book.API.Controllers
@@ -104,6 +103,16 @@ namespace Book.API.Controllers
 
             return Ok(booksGenres);
         }
+
+        [AllowAnonymous]
+        [HttpGet("search/{bookName}")]
+        public async Task<IActionResult> GetBooksByBookNameAsync(string bookName)
+        {
+            var books = await _bookGenresService.GetBooksByBookNameWithGenreNamesAsync(bookName);
+
+            return Ok(books);
+        }
+
 
         [Authorize(Policy = "Books.Client")]
         [HttpPut]

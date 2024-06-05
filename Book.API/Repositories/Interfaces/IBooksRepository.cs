@@ -11,6 +11,7 @@ namespace Book.API.Repositories.Interfaces
         Task<IEnumerable<Books>> GetBooksAsync();
         Task<IEnumerable<Books>> GetBooksByGenreAsync(IEnumerable<BookGenresDto> bookGenres);
         Task<IEnumerable<Books>> GetBooksByUserIdAsync(int id);
+        Task<IEnumerable<Books>> GetBooksByBookNameAsync(string name);
         Task<Books> UpdateBookAsync(Books book);
         Task<bool> DeleteBookAsync(int id);
     }

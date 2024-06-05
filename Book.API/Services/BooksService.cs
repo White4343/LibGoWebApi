@@ -6,7 +6,9 @@ using Book.API.Models.Responses.BooksResponses;
 using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using Newtonsoft.Json;
 using SendGrid.Helpers.Errors.Model;
+using StackExchange.Redis;
 
 namespace Book.API.Services
 {
@@ -16,12 +18,15 @@ namespace Book.API.Services
         private readonly IBooksRepository _booksRepository;
         private readonly ILogger<BooksService> _logger;
         private readonly IMapper _mapper;
+        private readonly IConnectionMultiplexer _redisConnection;
 
-        public BooksService(IBooksRepository booksRepository, ILogger<BooksService> logger, IMapper mapper)
+        public BooksService(IBooksRepository booksRepository, ILogger<BooksService> logger, IMapper mapper,
+            IConnectionMultiplexer redisConnection)
         {
             _booksRepository = booksRepository;
             _logger = logger;
             _mapper = mapper;
+            _redisConnection = redisConnection;
         }
 
         public async Task<Books> CreateBookAsync(CreateBooksRequest book, int userId)
@@ -119,10 +124,37 @@ namespace Book.API.Services
         {
             try
             {
+                var db = _redisConnection.GetDatabase();
+                var cachedBooks = await db.StringGetAsync("books");
+
+                if (!cachedBooks.IsNullOrEmpty)
+                {
+                    return JsonConvert.DeserializeObject<IEnumerable<Books>>(cachedBooks);
+                }
+
                 var books = await _booksRepository.GetBooksAsync();
 
                 books = books.Where(b => b.IsVisible).ToList();
 
+                await db.StringSetAsync("books", JsonConvert.SerializeObject(books), TimeSpan.FromMinutes(300));
+
+                return books;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Books>> GetBooksByBookNameAsync(string name)
+        {
+            try
+            {
+                var books = await _booksRepository.GetBooksByBookNameAsync(name);
+
+                books = books.Where(b => b.IsVisible).ToList();
+                
                 return books;
             }
             catch (Exception e)
@@ -155,6 +187,7 @@ namespace Book.API.Services
             }
         }
 
+        // TODO: If book is bought once or more, then just delete userId, disable book from buying
         public async Task<bool> DeleteBookAsync(int id, int userId)
         {
             try

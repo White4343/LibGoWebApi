@@ -7,6 +7,7 @@ using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Book.API.Services
 {
@@ -136,26 +137,30 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<IEnumerable<GetAllBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync()
+        public async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync()
         {
             try
             {
                 var books = await _booksService.GetBooksAsync();
 
-                var result = new List<GetAllBooksWithGenreNamesResponse>();
+                var result = await GetGenreNamesByBooks(books);
 
-                foreach (var book in books)
-                {
-                    var bookGenre = await GetBookGenresWithGenreNamesByBookId(book.Id, book.UserId);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
-                    var item = new GetAllBooksWithGenreNamesResponse
-                    {
-                        Book = book,
-                        Genres = bookGenre.Genres
-                    };
+        public async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetBooksByBookNameWithGenreNamesAsync(string name)
+        {
+            try
+            {
+                var books = await _booksService.GetBooksByBookNameAsync(name);
 
-                    result.Add(item);
-                }
+                var result = await GetGenreNamesByBooks(books);
 
                 return result;
             }
@@ -315,6 +320,47 @@ namespace Book.API.Services
                 };
 
                 return bookGenresResponse;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetGenreNamesByBooks(IEnumerable<Books> books)
+        {
+            try
+            {
+                var result = new List<GetBooksWithGenreNamesResponse>();
+
+                foreach (var book in books)
+                {
+                    try
+                    {
+                        var bookGenre = await GetBookGenresWithGenreNamesByBookId(book.Id, book.UserId);
+
+                        var item = new GetBooksWithGenreNamesResponse
+                        {
+                            Book = book,
+                            Genres = bookGenre.Genres
+                        };
+
+                        result.Add(item);
+                    }
+                    catch (NotFoundException e)
+                    {
+                        var item = new GetBooksWithGenreNamesResponse
+                        {
+                            Book = book,
+                            Genres = null
+                        };
+
+                        result.Add(item);
+                    }
+                }
+
+                return result;
             }
             catch (Exception e)
             {

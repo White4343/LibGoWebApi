@@ -13,7 +13,8 @@ namespace Book.API.Services.Interfaces
         Task<IEnumerable<BookGenresDto>> GetBookGenresByBookIdAsync(int bookId, int tokenUserId);
         Task<GetBookByPageResponse> GetBookPageByIdAsync(int bookId, int userId);
         Task<GetBooksByGenreResponse> GetGenreBooksPageByIdAsync(int genreId, int tokenUserId);
-        Task<IEnumerable<GetAllBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync();
+        Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync();
+        Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetBooksByBookNameWithGenreNamesAsync(string name);
         Task<BookGenresDto> UpdateBookGenreAsync(BookGenres bookGenre, int tokenUserId);
         Task DeleteBookGenreAsync(int id, int tokenUserId);
     }

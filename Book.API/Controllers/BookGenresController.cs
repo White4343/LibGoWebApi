@@ -99,7 +99,6 @@ namespace Book.API.Controllers
             return Ok();
         }
 
-        // TODO: Refactor GetUserId?
         private int GetUserId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
