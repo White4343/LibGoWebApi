@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
+using Book.API.Models;
 using Book.API.Models.Dtos;
 using Book.API.Models.Requests.BookGenresRequests;
 using Book.API.Models.Responses.BooksResponses;
@@ -137,11 +138,13 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync()
+        public async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync(BookFilters? filters)
         {
             try
             {
                 var books = await _booksService.GetBooksAsync();
+
+                books = FilterBooks(books, filters);
 
                 var result = await GetGenreNamesByBooks(books);
 
@@ -367,6 +370,53 @@ namespace Book.API.Services
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        private IEnumerable<Books> FilterBooks(IEnumerable<Books> books, BookFilters? filters)
+        {
+            if (filters.AlphabeticalOrder == true)
+            {
+                books = books.OrderBy(b => b.Name);
+            }
+            else if (filters.IsAlphabeticalOrderReversed == true)
+            {
+                books = books.OrderByDescending(b => b.Name);
+            }
+
+            if (filters.IsFree == true)
+            {
+                books = books.Where(b => b.Price == 0);
+            }
+
+
+            if (filters.DateNewest == true)
+            {
+                books = books.OrderByDescending(b => b.PublishDate);
+            }
+            else if (filters.DateOldest == true)
+            {
+                books = books.OrderBy(b => b.PublishDate);
+            }
+
+            if (filters.PriceLowest != null)
+            {
+                books = books.Where(b => b.Price >= filters.PriceLowest);
+            }
+            if (filters.PriceHighest != null)
+            {
+                books = books.Where(b => b.Price <= filters.PriceHighest);
+            }
+
+            if (filters.FromLowestPrice == true)
+            {
+                books = books.OrderBy(b => b.Price);
+            }
+            else if (filters.FromHighestPrice == true)
+            {
+                books = books.OrderByDescending(b => b.Price);
+            }
+
+            return books;
         }
     }
 }

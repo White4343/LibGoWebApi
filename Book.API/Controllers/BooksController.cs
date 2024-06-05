@@ -4,10 +4,8 @@ using Book.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Book.API.Models;
 
-
-// TODO: Add search by book name
-// TODO: Sort by name A=>Z, Z=>A, date, price
 namespace Book.API.Controllers
 {
     [Authorize]
@@ -95,11 +93,12 @@ namespace Book.API.Controllers
             return Ok(books);
         }
 
+        // TODO: Sort by name A=>Z, Z=>A, date, price
         [AllowAnonymous]
-        [HttpGet("books/genres")]
-        public async Task<IActionResult> GetAllBooksWithGenreNamesAsync()
+        [HttpPost("books/genres")]
+        public async Task<IActionResult> GetAllBooksWithGenreNamesAsync([FromBody] BookFilters? filters)
         {
-            var booksGenres = await _bookGenresService.GetAllBooksWithGenreNamesAsync();
+            var booksGenres = await _bookGenresService.GetAllBooksWithGenreNamesAsync(filters);
 
             return Ok(booksGenres);
         }
