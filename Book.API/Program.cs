@@ -117,6 +117,7 @@ namespace Book.API
 
             builder.Services.AddScoped<IChapterService, ChaptersService>();
             builder.Services.AddScoped<IUsersService, UsersService>();
+            builder.Services.AddScoped<IBoughtBooksService, BoughtBooksService>();
 
             builder.Services.AddScoped<IReadersRepository, ReadersRepository>();
             builder.Services.AddScoped<IReadersService, ReadersService>();

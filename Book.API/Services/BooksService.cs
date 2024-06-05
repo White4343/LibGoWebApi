@@ -6,6 +6,7 @@ using Book.API.Models.Responses.BooksResponses;
 using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using SendGrid.Helpers.Errors.Model;
 using StackExchange.Redis;
@@ -19,15 +20,17 @@ namespace Book.API.Services
         private readonly IMapper _mapper;
         private readonly IConnectionMultiplexer _redisConnection;
         private readonly IUsersService _usersService;
+        private readonly IBoughtBooksService _boughtBooksService;
 
         public BooksService(IBooksRepository booksRepository, ILogger<BooksService> logger, IMapper mapper,
-            IConnectionMultiplexer redisConnection, IUsersService usersService)
+            IConnectionMultiplexer redisConnection, IUsersService usersService, IBoughtBooksService boughtBooksService)
         {
             _booksRepository = booksRepository;
             _logger = logger;
             _mapper = mapper;
             _redisConnection = redisConnection;
             _usersService = usersService;
+            _boughtBooksService = boughtBooksService;
         }
 
         public async Task<Books> CreateBookAsync(CreateBooksRequest book, int userId)
@@ -199,7 +202,7 @@ namespace Book.API.Services
         }
 
         // TODO: If book is bought once or more, then just delete userId, disable book from buying
-        public async Task<bool> DeleteBookAsync(int id, int userId)
+        public async Task<bool> DeleteBookAsync(int id, int userId, string token)
         {
             try
             {
@@ -207,9 +210,26 @@ namespace Book.API.Services
 
                 IsBookAuthor(book.UserId, userId);
 
+                await _boughtBooksService.GetUserSubscriptionByBookId(id, token);
+
+                await _boughtBooksService.GetBoughtBooksByBookId(id, token);
+
                 var deleted = await _booksRepository.DeleteBookAsync(id);
 
                 return deleted;
+            }
+            catch (UnauthorizedException e)
+            {
+                throw new UnauthorizedAccessException(e.Message);
+            }
+            catch (UnsupportedContentTypeException e)
+            {
+                var book = await BookExists(id, userId);
+
+                book.IsAvailableToBuy = false;
+                book.UserId = 0;
+
+                await _booksRepository.UpdateBookAsync(book);
             }
             catch (Exception e)
             {

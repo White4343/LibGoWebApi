@@ -127,7 +127,7 @@ namespace Book.API.Controllers
             return Ok(updatedBook);
         }
 
-        [Authorize(Policy = "Books.Admin")]
+        [Authorize(Policy = "Books.Client")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBookAsync(int id)
         {
