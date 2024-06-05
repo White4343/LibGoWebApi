@@ -172,6 +172,26 @@ namespace User.API.Services
             }
         }
 
+        public async Task<IEnumerable<UserSubscriptions>> GetUserSubscriptionsByBookIdAsync(int bookId, int tokenUserId)
+        {
+            try
+            {
+                var result = await _userSubscriptionsRepository.GetUserSubscriptionsByBookIdAsync(bookId);
+
+                if (result.Any(x => x.UserId != tokenUserId))
+                {
+                    throw new UnauthorizedAccessException("You are not authorized to view this subscriptions.");
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<UserSubscriptions> PatchUserSubscriptionDateEndAsync(int id)
         {
             try
