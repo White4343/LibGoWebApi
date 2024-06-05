@@ -12,7 +12,6 @@ using StackExchange.Redis;
 
 namespace Book.API.Services
 {
-    // TODO: Patch Requests?
     public class BooksService : IBooksService
     {
         private readonly IBooksRepository _booksRepository;

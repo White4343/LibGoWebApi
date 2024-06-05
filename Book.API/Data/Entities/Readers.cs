@@ -10,7 +10,6 @@
         
         public int? Rating { get; set; }
         
-        // TODO: Add book name and photo
         public int BookId { get; set; }
         public Books Book { get; set; }
 

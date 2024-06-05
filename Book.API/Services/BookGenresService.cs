@@ -12,7 +12,6 @@ using SendGrid.Helpers.Errors.Model;
 
 namespace Book.API.Services
 {
-    // TODO: Maybe add userId to BookGenres Entity?
     public class BookGenresService : IBookGenresService
     {
         private readonly IBookGenresRepository _bookGenresRepository;
