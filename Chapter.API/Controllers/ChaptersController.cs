@@ -7,7 +7,6 @@ using System.Security.Claims;
 using Chapter.API.Models.Requests;
 
 
-// TODO: Add Caching
 namespace Chapter.API.Controllers
 {
     [Authorize]
