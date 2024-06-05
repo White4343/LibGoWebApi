@@ -2,6 +2,8 @@ using Genre.API.Middleware;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+// TODO: Move to Book.API;
+// TODO: Add endpoint for getting all books and all genres for books
 namespace Genre.API
 {
     public class Program
