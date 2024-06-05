@@ -139,6 +139,24 @@ namespace User.API.Repositories
             }
         }
 
+        public async Task<IEnumerable<UserSubscriptions>> GetUserSubscriptionsByBookIdAsync(int bookId)
+        {
+            try
+            {
+                var result = await _context.UserSubscriptions.Where(us => 
+                    us.BookIds.Contains(bookId)).ToListAsync();
+
+                IsUserSubscriptionsNullOrEmpty(result);
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<UserSubscriptions> PatchUserSubscriptionDateEndAsync(int id)
         {
             try

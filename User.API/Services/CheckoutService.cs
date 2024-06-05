@@ -26,6 +26,16 @@ namespace User.API.Services
         {
             var book = await _booksService.GetBookByIdAsync(bookId);
 
+            if (!book.IsAvailableToBuy)
+            {
+                throw new BadRequestException("Book is not available to buy.");
+            }
+
+            if (book.Price == 0)
+            {
+                throw new BadRequestException("Book is free.");
+            }
+
             var options = new SessionCreateOptions
             {
                 // Stripe calls the URLs below when certain checkout events happen such as success and failure.

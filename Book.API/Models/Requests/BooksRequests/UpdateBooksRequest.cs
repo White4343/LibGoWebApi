@@ -12,7 +12,7 @@ namespace Book.API.Models.Requests.BooksRequests
 
         public string? Description { get; set; } = "";
 
-        public int? Price { get; set; } = 0;
+        public int? Price { get; set; }
 
         public DateTime PublishDate { get; set; } = DateTime.Now;
 

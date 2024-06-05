@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Book.API.Data.Entities;
+using Book.API.Models;
 using Book.API.Models.Dtos;
 using Book.API.Models.Requests.BookGenresRequests;
 using Book.API.Models.Responses.BooksResponses;
@@ -7,28 +8,30 @@ using Book.API.Models.Responses.GenresResponses;
 using Book.API.Repositories;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Book.API.Services
 {
-    // TODO: Maybe add userId to BookGenres Entity?
     public class BookGenresService : IBookGenresService
     {
         private readonly IBookGenresRepository _bookGenresRepository;
         private readonly IBooksService _booksService;
         private readonly IGenresService _genresService;
+        private readonly IReadersRepository _readersRepository;
         private readonly ILogger<BookGenresService> _logger;
         private readonly IMapper _mapper;
 
         public BookGenresService(IBookGenresRepository bookGenresRepository, 
-            IBooksService booksService, ILogger<BookGenresService> logger, IMapper mapper, IGenresService genresService)
+            IBooksService booksService, ILogger<BookGenresService> logger, IMapper mapper, IGenresService genresService,
+            IReadersRepository readersRepository)
         {
             _bookGenresRepository = bookGenresRepository;
             _booksService = booksService;
             _logger = logger;
             _mapper = mapper;
             _genresService = genresService;
+            _readersRepository = readersRepository;
         }
-
 
         public async Task<BookGenresDto> CreateBookGenreAsync(CreateBookGenresRequests bookGenre, int tokenUserId)
         {
@@ -136,26 +139,32 @@ namespace Book.API.Services
             }
         }
 
-        public async Task<IEnumerable<GetAllBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync()
+        public async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetAllBooksWithGenreNamesAsync(BookFilters? filters)
         {
             try
             {
                 var books = await _booksService.GetBooksAsync();
 
-                var result = new List<GetAllBooksWithGenreNamesResponse>();
+                books = FilterBooks(books, filters);
 
-                foreach (var book in books)
-                {
-                    var bookGenre = await GetBookGenresWithGenreNamesByBookId(book.Id, book.UserId);
+                var result = await GetGenreNamesByBooks(books);
 
-                    var item = new GetAllBooksWithGenreNamesResponse
-                    {
-                        Book = book,
-                        Genres = bookGenre.Genres
-                    };
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
-                    result.Add(item);
-                }
+        public async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetBooksByBookNameWithGenreNamesAsync(string name)
+        {
+            try
+            {
+                var books = await _booksService.GetBooksByBookNameAsync(name);
+
+                var result = await GetGenreNamesByBooks(books);
 
                 return result;
             }
@@ -174,9 +183,12 @@ namespace Book.API.Services
 
                 var bookGenres = await GetBookGenresWithGenreNamesByBookId(id, userId);
 
+                var rating = await _readersRepository.GetBooksRatingByBookIdAsync(id);
+
                 var response = new GetBookByPageResponse
                 {
-                    Genres = bookGenres.Genres
+                    Genres = bookGenres.Genres,
+                    Rating = rating,
                 };
 
                 if (book.UserId != userId && !book.IsVisible)
@@ -207,10 +219,19 @@ namespace Book.API.Services
 
                 booksByGenre = booksByGenre.Where(b => b.IsVisible).ToList();
 
+                var books = _mapper.Map<IEnumerable<BooksDto>>(booksByGenre);
+
+                foreach (var book in books)
+                {
+                    var rating = await _readersRepository.GetBooksRatingByBookIdAsync(book.Id);
+
+                    book.Rating = rating;
+                }
+
                 var response = new GetBooksByGenreResponse
                 {
                     Genre = bookGenresByGenreResponse.Genre,
-                    Books = booksByGenre
+                    Books = books
                 };
 
                 return response;
@@ -321,6 +342,96 @@ namespace Book.API.Services
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        private async Task<IEnumerable<GetBooksWithGenreNamesResponse>> GetGenreNamesByBooks(IEnumerable<Books> books)
+        {
+            try
+            {
+                var result = new List<GetBooksWithGenreNamesResponse>();
+
+                foreach (var book in books)
+                {
+                    try
+                    {
+                        var bookGenre = await GetBookGenresWithGenreNamesByBookId(book.Id, book.UserId);
+                        var rating = await _readersRepository.GetBooksRatingByBookIdAsync(book.Id);
+
+                        var item = new GetBooksWithGenreNamesResponse
+                        {
+                            Book = book,
+                            Rating = rating,
+                            Genres = bookGenre.Genres
+                        };
+
+                        result.Add(item);
+                    }
+                    catch (NotFoundException e)
+                    {
+                        var item = new GetBooksWithGenreNamesResponse
+                        {
+                            Book = book,
+                            Genres = null
+                        };
+
+                        result.Add(item);
+                    }
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private IEnumerable<Books> FilterBooks(IEnumerable<Books> books, BookFilters? filters)
+        {
+            if (filters.AlphabeticalOrder == true)
+            {
+                books = books.OrderBy(b => b.Name);
+            }
+            else if (filters.IsAlphabeticalOrderReversed == true)
+            {
+                books = books.OrderByDescending(b => b.Name);
+            }
+
+            if (filters.IsFree == true)
+            {
+                books = books.Where(b => b.Price == 0);
+            }
+
+
+            if (filters.DateNewest == true)
+            {
+                books = books.OrderByDescending(b => b.PublishDate);
+            }
+            else if (filters.DateOldest == true)
+            {
+                books = books.OrderBy(b => b.PublishDate);
+            }
+
+            if (filters.PriceLowest != null)
+            {
+                books = books.Where(b => b.Price >= filters.PriceLowest);
+            }
+            if (filters.PriceHighest != null)
+            {
+                books = books.Where(b => b.Price <= filters.PriceHighest);
+            }
+
+            if (filters.FromLowestPrice == true)
+            {
+                books = books.OrderBy(b => b.Price);
+            }
+            else if (filters.FromHighestPrice == true)
+            {
+                books = books.OrderByDescending(b => b.Price);
+            }
+
+            return books;
         }
     }
 }

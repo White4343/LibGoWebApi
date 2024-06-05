@@ -137,6 +137,36 @@ namespace Book.API.Repositories
             }
         }
 
+        public async Task<double> GetBooksRatingByBookIdAsync(int bookId)
+        {
+            try
+            {
+                var readers = await GetReadersByBookIdAsync(bookId);
+
+                var ratings = readers.Where(x => x.Rating != null).Select(x => x.Rating).ToList();
+
+                if (ratings.Count == 0)
+                {
+                    return 0;
+                }
+
+                var rating = ratings.Average();
+
+                var result = Convert.ToDouble(rating);
+
+                return result;
+            }
+            catch (NotFoundException e)
+            {
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<Readers> UpdateReaderAsync(Readers reader)
         {
             try

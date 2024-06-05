@@ -6,5 +6,6 @@ namespace Book.API.Models.Responses.BooksResponses
     {
         public Books Book { get; set; }
         public IEnumerable<Genres> Genres { get; set; }
+        public double Rating { get; set; }
     }
 }

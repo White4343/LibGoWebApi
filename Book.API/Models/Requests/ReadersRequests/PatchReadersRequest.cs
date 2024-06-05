@@ -6,5 +6,6 @@
         public string? Status { get; set; }
         public bool? NotifyEnabled { get; set; }
         public bool? IsVisible { get; set; }
+        public int? Rating { get; set; }
     }
 }

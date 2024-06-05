@@ -26,6 +26,8 @@ namespace Book.API.Data.EntityConfigurations
             builder.Property(x => x.IsVisible)
                 .IsRequired();
 
+            builder.Property(x => x.Rating);
+
             builder.Property(x => x.UserId)
                 .IsRequired();
 

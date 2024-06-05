@@ -28,7 +28,6 @@ namespace Chapter.API.Services
             _mapper = mapper;
         }
 
-        // TODO: If book price is 0, then chapter is free
         public async Task<Chapters> CreateChapterAsync(CreateChapterRequest chapter, int userId, string? token)
         {
             try
@@ -46,6 +45,11 @@ namespace Chapter.API.Services
                     BookId = chapter.BookId,
                     AuthorUserId = userId
                 };
+
+                if (book.Price == 0)
+                {
+                    chapterToCreate.IsFree = true;
+                }
 
                 var validationResult = await _validator.ValidateAsync(chapterToCreate);
 
@@ -262,7 +266,6 @@ namespace Chapter.API.Services
             }
         }
 
-        // TODO: check if user have subscription
         private async Task CheckUser(Chapters chapters, int? userId, string? token)
         {
             await BookExistsAsync(chapters.BookId, token);

@@ -8,9 +8,8 @@
         public bool IsVisible { get; set; }
         public int UserId { get; set; }
         
-        // TODO: Add ratings 1=>5
-
-        // TODO: Add book name and photo
+        public int? Rating { get; set; }
+        
         public int BookId { get; set; }
         public Books Book { get; set; }
 

@@ -11,7 +11,7 @@ namespace Book.API.Data.Entities
         public int BookId { get; set; }
         public Books Book { get; set; }
 
-        // TODO: Add genre name
+        // TODO: Add genre name (low)
         [Required]
         public int GenreId { get; set; }
         public Genres Genre { get; set; }

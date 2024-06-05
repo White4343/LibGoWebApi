@@ -107,6 +107,26 @@ namespace Book.API.Repositories
             return books;
         }
 
+        public async Task<IEnumerable<Books>> GetBooksByBookNameAsync(string name)
+        {
+            try
+            {
+                var books = await _context.Books.Where(b => b.Name.Contains(name)).ToListAsync();
+
+                if (books == null || books.Count == 0)
+                {
+                    throw new NotFoundException($"Books with name {name} not found.");
+                }
+
+                return books;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<Books> UpdateBookAsync(Books book)
         {
             try

@@ -63,6 +63,16 @@ namespace User.API.Controllers
             return Ok(userSubscriptions);
         }
 
+        [HttpGet("book/{bookId}")]
+        public async Task<IActionResult> GetUserSubscriptionsByBookId(int bookId)
+        {
+            var tokenUserId = GetUserId();
+
+            var userSubscriptions = await _userSubscriptionsService.GetUserSubscriptionsByBookIdAsync(bookId, tokenUserId);
+
+            return Ok(userSubscriptions);
+        }
+
         [Authorize(Policy = "Users.Admin")]
         [HttpGet]
         public async Task<IActionResult> GetUserSubscriptions()
