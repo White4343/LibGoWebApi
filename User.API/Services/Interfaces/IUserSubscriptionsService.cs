@@ -14,6 +14,7 @@ namespace User.API.Services.Interfaces
         Task<IEnumerable<UserSubscriptions>> GetUserSubscriptionsAsync();
         Task<IEnumerable<UserSubscriptions>> GetUserSubscriptionsByBookIdAsync(int bookId, int tokenUserId);
         Task<UserSubscriptions> PatchUserSubscriptionDateEndAsync(int id);
+        Task<UserSubscriptions> PatchUserSubscriptionIsActiveFalseAsync(int id);
         Task PatchUserSubscriptionExpiredAsync();
         Task DeleteUserSubscriptionByIdAsync(int id);
     }

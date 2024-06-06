@@ -13,6 +13,7 @@ namespace User.API.Repositories.Interfaces
         Task<IEnumerable<UserSubscriptions>> GetUserSubscriptionsAsync();
         Task<IEnumerable<UserSubscriptions>> GetUserSubscriptionsByBookIdAsync(int bookId);
         Task<UserSubscriptions> PatchUserSubscriptionDateEndAsync(int id);
+        Task<UserSubscriptions> PatchUserSubscriptionIsActiveFalseAsync(int id);
         Task PatchUserSubscriptionExpiredAsync();
         Task DeleteUserSubscriptionByIdAsync(int id);
     }

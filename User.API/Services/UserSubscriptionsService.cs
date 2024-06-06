@@ -75,6 +75,8 @@ namespace User.API.Services
                     throw new UnauthorizedAccessException("You are not authorized to view this subscription.");
                 }
 
+                result = await PatchUserSubscriptionIsActiveFalseAsync(id);
+
                 return result;
             }
             catch (Exception e)
@@ -88,12 +90,14 @@ namespace User.API.Services
         {
             try
             {
-                var result = await _userSubscriptionsRepository.GetUserSubscriptionByUserIdBookIdAsync(userId, bookId);
+                var userSubscription = await _userSubscriptionsRepository.GetUserSubscriptionByUserIdBookIdAsync(userId, bookId);
 
-                if (result.UserId != tokenUserId || result.AuthorUserId != tokenUserId)
+                if (userSubscription.UserId != tokenUserId || userSubscription.AuthorUserId != tokenUserId)
                 {
                     throw new UnauthorizedAccessException("You are not authorized to view this subscription.");
                 }
+
+                var result = await PatchUserSubscriptionIsActiveFalseAsync(userSubscription.Id);
 
                 return result;
             }
@@ -149,6 +153,8 @@ namespace User.API.Services
             try
             {
                 var existingSubscription = await _userSubscriptionsRepository.GetUserSubscriptionByUserIdSubscriptionIdAsync(userId, subscriptionId);
+
+                existingSubscription = await PatchUserSubscriptionIsActiveFalseAsync(existingSubscription.Id);
 
                 return existingSubscription;
             }
@@ -211,6 +217,31 @@ namespace User.API.Services
                 }
 
                 return await _userSubscriptionsRepository.PatchUserSubscriptionDateEndAsync(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task<UserSubscriptions> PatchUserSubscriptionIsActiveFalseAsync(int id)
+        {
+            try
+            {
+                var userSubscription = await _userSubscriptionsRepository.GetUserSubscriptionByIdAsync(id);
+
+                if (!userSubscription.IsActive)
+                {
+                    return userSubscription;
+                }
+
+                if (userSubscription.EndDate > DateTime.UtcNow && userSubscription.IsActive)
+                {
+                    return await _userSubscriptionsRepository.PatchUserSubscriptionIsActiveFalseAsync(id);
+                }
+
+                return userSubscription;
             }
             catch (Exception e)
             {

@@ -6,7 +6,6 @@ using User.API.Services.Interfaces;
 
 namespace User.API.Controllers
 {
-    // TODO: Add expired when user access to userSubscriptions
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
