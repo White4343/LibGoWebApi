@@ -11,6 +11,7 @@ namespace User.API.Services.Interfaces
         Task<UserDto> GetUserByIdAsync(int id);
         Task<GetUserPrivatePageResponse> GetUserPrivatePageByIdAsync(int id, int tokenUserId);
         Task<IEnumerable<UserDto>> GetUsersAsync();
+        Task<IEnumerable<UserDto>> GetUsersByNicknameAsync(string nickname);
         Task<Users> UpdateUserAsync(Users user, int tokenUserId);
         Task<Users> PatchUserAsync(PatchUserRequest request, int tokenUserId);
         Task<Users> PatchUserPasswordAsync(PatchUserPasswordRequest request, int tokenUserId);

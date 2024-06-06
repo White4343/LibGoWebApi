@@ -146,6 +146,28 @@ namespace User.API.Services
             }
         }
 
+        public async Task<IEnumerable<UserDto>> GetUsersByNicknameAsync(string nickname)
+        {
+            try
+            {
+                var users = await GetUsersAsync();
+
+                var resultUsers = users.Where(u => u.Nickname.Contains(nickname));
+
+                if (resultUsers == null || resultUsers.Count() == 0)
+                {
+                    throw new NotFoundException("No users found with this nickname");
+                }
+
+                return resultUsers;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public async Task<Users> UpdateUserAsync(Users user, int tokenUserId)
         {
             try

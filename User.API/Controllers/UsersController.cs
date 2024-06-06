@@ -8,7 +8,6 @@ using User.API.Services.Interfaces;
 
 namespace User.API.Controllers
 {
-    // TODO: Add user find by nickname
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
@@ -57,6 +56,15 @@ namespace User.API.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _userService.GetUsersAsync();
+
+            return Ok(users);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("search/{nickname}")]
+        public async Task<IActionResult> SearchUsers(string nickname)
+        {
+            var users = await _userService.GetUsersByNicknameAsync(nickname);
 
             return Ok(users);
         }
