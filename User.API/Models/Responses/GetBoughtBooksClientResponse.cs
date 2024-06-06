@@ -9,5 +9,7 @@
         public long AuthorUserId { get; set; }
         public long UserId { get; set; }
         public long BookId { get; set; }
+        public string BookName { get; set; }
+        public string BookPhoto { get; set; }
     }
 }

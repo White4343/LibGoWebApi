@@ -215,8 +215,12 @@ namespace User.API.Services
                     throw new BadRequestException($"You can't delete Subscription when it's active.");
                 }
 
-                // TODO: Check if is it any BoughtSubscription from users before deleting
+                var userSubscriptions = await _userSubscriptionsRepository.GetUserSubscriptionsByAuthorUserIdAsync(subscription.UserId);
 
+                if (userSubscriptions.Any(x => x.IsActive))
+                {
+                    throw new BadRequestException($"You can't update Subscription when it's active.");
+                }
                 await _subscriptionsRepository.DeleteSubscriptionAsync(subscription);
 
                 return true;

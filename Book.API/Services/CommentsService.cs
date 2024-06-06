@@ -4,6 +4,7 @@ using Book.API.Models.Dtos;
 using Book.API.Models.Requests.CommentsRequests;
 using Book.API.Repositories.Interfaces;
 using Book.API.Services.Interfaces;
+using Book.API.Validation;
 using FluentValidation;
 using SendGrid.Helpers.Errors.Model;
 
@@ -55,6 +56,8 @@ namespace Book.API.Services
                 {
                     throw new ValidationException(validationResult.Errors);
                 }
+
+                commentToCreate.Content = await ValidateCommentContent(commentToCreate.Content);
 
                 var createdComment = await _commentsRepository.CreateCommentAsync(commentToCreate);
 
@@ -142,6 +145,8 @@ namespace Book.API.Services
                     throw new ValidationException(validationResult.Errors);
                 }
 
+                commentToUpdate.Content = await ValidateCommentContent(commentToUpdate.Content);
+
                 var updatedComment = await _commentsRepository.UpdateCommentAsync(commentToUpdate);
 
                 return _mapper.Map<CommentsDto>(updatedComment);
@@ -157,9 +162,18 @@ namespace Book.API.Services
         {
             try
             {
-                var comment = await _commentsRepository.DeleteCommentAsync(id, userId);
+                var comment = await _commentsRepository.GetCommentByIdAsync(id);
 
-                return comment;
+                var book = await BookExists(comment.BookId, userId);
+
+                if (userId != book.UserId || comment.UserId != userId)
+                {
+                    throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+                }
+
+                var commentTodDelete = await _commentsRepository.DeleteCommentAsync(id, userId);
+
+                return commentTodDelete;
             }
             catch (Exception e)
             {
@@ -172,6 +186,13 @@ namespace Book.API.Services
         {
             try
             {
+                var book = await BookExists(bookId, userId);
+
+                if (book.UserId != userId)
+                {
+                    throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+                }
+
                 var deleted = await _commentsRepository.DeleteCommentsByBookIdAsync(bookId, userId);
 
                 return deleted;
@@ -211,6 +232,24 @@ namespace Book.API.Services
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        private void IsCommentAuthor(int commentUserId, int userId)
+        {
+            if (commentUserId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            }
+        }
+
+        private async Task<string> ValidateCommentContent(string content)
+        {
+
+            var censorValidator = await CensorValidator.CreateFromFileAsync();
+            
+            var result = censorValidator.CensorText(content);
+
+            return result;
         }
     }
 }

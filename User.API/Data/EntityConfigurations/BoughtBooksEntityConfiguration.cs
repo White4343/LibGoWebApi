@@ -31,6 +31,11 @@ namespace User.API.Data.EntityConfigurations
 
             builder.Property(bb => bb.BookId)
                 .IsRequired();
+
+            builder.Property(bb => bb.BookName)
+                .IsRequired();
+
+            builder.Property(bb => bb.BookPhoto);
         }
     }
 }

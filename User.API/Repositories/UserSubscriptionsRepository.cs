@@ -182,6 +182,27 @@ namespace User.API.Repositories
                 throw;
             }
         }
+        
+        public async Task<UserSubscriptions> PatchUserSubscriptionIsActiveFalseAsync(int id)
+        {
+            try
+            {
+                var userSubscription = await GetUserSubscriptionByIdAsync(id);
+
+                userSubscription.IsActive = false;
+
+                _context.UserSubscriptions.Update(userSubscription);
+
+                await _context.SaveChangesAsync();
+
+                return userSubscription;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
         public async Task PatchUserSubscriptionExpiredAsync()
         {
