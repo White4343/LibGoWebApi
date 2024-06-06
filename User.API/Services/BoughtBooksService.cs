@@ -35,7 +35,9 @@ namespace User.API.Services
                     IsPaidToAuthor = false,
                     AuthorUserId = book.UserId,
                     UserId = userId,
-                    BookId = book.Id
+                    BookId = book.Id,
+                    BookName = book.Name,
+                    BookPhoto = book.PhotoUrl
                 };
 
                 var result = await _boughtBooksRepository.CreateBoughtBookAsync(BoughtBook);

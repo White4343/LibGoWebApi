@@ -10,6 +10,7 @@
         public int AuthorUserId { get; set; }
         public int UserId { get; set; }
         public int BookId { get; set; }
-        // TODO: Add book name and photo
+        public string BookName { get; set; }
+        public string? BookPhoto { get; set; }
     }
 }
