@@ -99,7 +99,7 @@ namespace Book.API.Repositories
             {
                 var commentToUpdate = await CommentExists(comment.Id);
 
-                await IsCommentAuthor(commentToUpdate.UserId, comment.UserId);
+                IsCommentAuthor(commentToUpdate.UserId, comment.UserId);
 
                 commentToUpdate.UserNickname = comment.UserNickname;
 
@@ -131,8 +131,6 @@ namespace Book.API.Repositories
             {
                 var comment = await CommentExists(id);
 
-                await IsCommentAuthor(comment.UserId, userId);
-
                 _context.Comments.Remove(comment);
 
                 await _context.SaveChangesAsync();
@@ -155,8 +153,6 @@ namespace Book.API.Repositories
             {
                 var comments = await GetCommentsByBookIdAsync(bookId);
 
-                await IsCommentAuthor(comments.First().UserId, userId);
-
                 _context.Comments.RemoveRange(comments);
 
                 await _context.SaveChangesAsync();
@@ -178,6 +174,8 @@ namespace Book.API.Repositories
             try
             {
                 var comments = await GetCommentsByUserIdAsync(userId);
+
+                IsCommentAuthor(comments.First().UserId, userId);
 
                 _context.Comments.RemoveRange(comments);
 
@@ -207,7 +205,7 @@ namespace Book.API.Repositories
             return comment;
         }
 
-        private async Task IsCommentAuthor(int commentUserId, int userId)
+        private void IsCommentAuthor(int commentUserId, int userId)
         {
             if (commentUserId != userId)
             {
