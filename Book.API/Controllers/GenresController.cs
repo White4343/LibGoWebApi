@@ -11,7 +11,7 @@ namespace Book.API.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class GenresController : ControllerBase
+    public partial class GenresController : ControllerBase
     {
         private readonly IGenresService _genresService;
         private readonly ILogger<GenresController> _logger;

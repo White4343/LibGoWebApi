@@ -247,7 +247,13 @@ namespace User.API.Services
                     }
 
                     if (!book.IsVisible)
-                        throw new NotFoundException($"You can't manipulate Subscription when book in list is visible."); }
+                        throw new NotFoundException($"You can't manipulate Subscription when book in list is visible.");
+
+                    if (book.Price == 0)
+                    {
+                        throw new BadRequestException($"You can't manipulate Subscription when book in list is free.");
+                    }
+                }
             }
             catch (NotFoundException e)
             {

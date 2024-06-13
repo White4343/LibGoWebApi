@@ -101,7 +101,7 @@ namespace Chapter.API.Services
                     {
                         IsUserAuthorized(userId);
 
-                        await IsBookBought(bookId, userId, token);
+                        await CheckUser(chapters.First(ch => !ch.IsFree), userId, token);
 
                         return chapters;
                     }

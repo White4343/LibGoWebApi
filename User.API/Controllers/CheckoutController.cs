@@ -10,9 +10,14 @@ using Stripe;
 
 namespace User.API.Controllers
 {
+    public class CheckoutRequest
+    {
+        public bool IsSubscription { get; set; }
+    }
+
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
+    [Authorize]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class CheckoutController : ControllerBase
     {
@@ -30,7 +35,7 @@ namespace User.API.Controllers
         }
 
         [HttpPost("{id}")]
-        public async Task<ActionResult> CheckoutOrder(int id, [FromServices] IServiceProvider sp, [FromBody] bool? isSubscription)
+        public async Task<ActionResult> CheckoutOrder(int id, [FromBody] CheckoutRequest request, [FromServices] IServiceProvider sp)
         {
             var referer = Request.Headers.Referer;
             s_wasmClientURL = referer[0];
@@ -53,11 +58,11 @@ namespace User.API.Controllers
 
                 string sessionId = string.Empty;
 
-                if (isSubscription.Equals(false) || isSubscription == null)
+                if (!request.IsSubscription)
                 {
                     sessionId = await CheckBookOut(id, userId, thisApiUrl);
                 }
-                else
+                else 
                 {
                     sessionId = await CheckSubscriptionOut(id, userId, thisApiUrl);
                 }
@@ -108,17 +113,29 @@ namespace User.API.Controllers
             var productService = new ProductService();
             var product = productService.Get(lineItems.Data[0].Price.ProductId);
 
-            var IsBookId = Int32.TryParse(product.Metadata["bookId"], out int bookId);
-            var IsSubId = Int32.TryParse(product.Metadata["subscriptionId"], out int subId);
+            int bookId = 0;
+            int subId = 0;
+            bool isBookId = false;
+            bool isSubId = false;
+
+            try
+            {
+                isBookId = Int32.TryParse(product.Metadata["bookId"], out bookId);
+            }
+            catch (KeyNotFoundException e)
+            {
+                isSubId = Int32.TryParse(product.Metadata["subscriptionId"], out subId);
+            }
+
             var userId = Int32.Parse(product.Metadata["userId"]);
 
-            if (IsBookId)
+            if (isBookId)
             {
                 _logger.LogInformation($"User {userId} bought book {bookId}");
 
                 await _checkoutService.SuccessfulBookCheckoutSessionAsync(bookId, userId);
             } 
-            else if (IsSubId)
+            else if (isSubId)
             {
                 _logger.LogInformation($"User {userId} bought subscription {sessionId}");
 

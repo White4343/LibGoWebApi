@@ -75,7 +75,10 @@ namespace User.API.Services
                     throw new UnauthorizedAccessException("You are not authorized to view this subscription.");
                 }
 
-                result = await PatchUserSubscriptionIsActiveFalseAsync(id);
+                if (result != null)
+                {
+                    result = await PatchUserSubscriptionIsActiveFalseAsync(id);
+                }
 
                 return result;
             }
@@ -92,7 +95,7 @@ namespace User.API.Services
             {
                 var userSubscription = await _userSubscriptionsRepository.GetUserSubscriptionByUserIdBookIdAsync(userId, bookId);
 
-                if (userSubscription.UserId != tokenUserId || userSubscription.AuthorUserId != tokenUserId)
+                if (userSubscription.UserId != tokenUserId && userSubscription.AuthorUserId != tokenUserId)
                 {
                     throw new UnauthorizedAccessException("You are not authorized to view this subscription.");
                 }
@@ -154,7 +157,10 @@ namespace User.API.Services
             {
                 var existingSubscription = await _userSubscriptionsRepository.GetUserSubscriptionByUserIdSubscriptionIdAsync(userId, subscriptionId);
 
-                existingSubscription = await PatchUserSubscriptionIsActiveFalseAsync(existingSubscription.Id);
+                if (existingSubscription != null)
+                {
+                    existingSubscription = await PatchUserSubscriptionIsActiveFalseAsync(existingSubscription.Id);
+                }
 
                 return existingSubscription;
             }
@@ -236,7 +242,7 @@ namespace User.API.Services
                     return userSubscription;
                 }
 
-                if (userSubscription.EndDate > DateTime.UtcNow && userSubscription.IsActive)
+                if (userSubscription.EndDate < DateTime.UtcNow && userSubscription.IsActive)
                 {
                     return await _userSubscriptionsRepository.PatchUserSubscriptionIsActiveFalseAsync(id);
                 }
