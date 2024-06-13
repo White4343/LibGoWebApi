@@ -24,35 +24,48 @@ namespace User.API.Services
 
         public async Task<string> CreateBookCheckoutSessionAsync(int bookId, int tokenUserId, string apiUrl, string clientUrl)
         {
-            var book = await _booksService.GetBookByIdAsync(bookId);
-
-            if (!book.IsAvailableToBuy)
+            try
             {
-                throw new BadRequestException("Book is not available to buy.");
+                var boughtBook = await _boughtBooksService.GetBoughtBooksByUserIdByBookId(tokenUserId, bookId, tokenUserId);
+
+                throw new BadRequestException("User already has this book.");
+            }
+            catch (NotFoundException a)
+            {
+                
             }
 
-            if (book.Price == 0)
+            try
             {
-                throw new BadRequestException("Book is free.");
-            }
+                var book = await _booksService.GetBookByIdAsync(bookId);
 
-            var options = new SessionCreateOptions
-            {
-                // Stripe calls the URLs below when certain checkout events happen such as success and failure.
-                SuccessUrl = $"{apiUrl}/checkout/success?sessionId=" + "{CHECKOUT_SESSION_ID}", // Customer paid.
-                CancelUrl = clientUrl + "failed",  // Checkout cancelled.
-                PaymentMethodTypes = new List<string> // Only card available in test mode?
+                if (!book.IsAvailableToBuy)
+                {
+                    throw new BadRequestException("Book is not available to buy.");
+                }
+
+                if (book.Price == 0)
+                {
+                    throw new BadRequestException("Book is free.");
+                }
+
+                var options = new SessionCreateOptions
+                {
+                    // Stripe calls the URLs below when certain checkout events happen such as success and failure.
+                    SuccessUrl = $"{apiUrl}/checkout/success?sessionId=" + "{CHECKOUT_SESSION_ID}", // Customer paid.
+                    CancelUrl = clientUrl + "failed",  // Checkout cancelled.
+                    PaymentMethodTypes = new List<string> // Only card available in test mode?
                 {
                     "card"
                 },
-                LineItems = new List<SessionLineItemOptions>
+                    LineItems = new List<SessionLineItemOptions>
                 {
                     new()
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount = book.Price, // Price is in USD cents.
-                            Currency = "UAH",
+                            Currency = "USD",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Metadata = new Dictionary<string, string>
@@ -68,49 +81,69 @@ namespace User.API.Services
                         Quantity = 1,
                     },
                 },
-                Mode = "payment" // One-time payment. Stripe supports recurring 'subscription' payments.
-            };
+                    Mode = "payment" // One-time payment. Stripe supports recurring 'subscription' payments.
+                };
 
-            var service = new SessionService();
-            var session = await service.CreateAsync(options);
+                var service = new SessionService();
+                var session = await service.CreateAsync(options);
 
-            return session.Id;
+                return session.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
 
         public async Task<string> CreateSubscriptionCheckoutSessionAsync(int subId, int tokenUserId, string apiUrl, string clientUrl)
         {
-            var subscription = await _subscriptionsService.GetSubscriptionByIdAsync(subId);
-
-            if (!subscription.IsActive)
+            try
             {
-                throw new BadRequestException("Subscription is not active.");
-            }
+                var subscription = await _subscriptionsService.GetSubscriptionByIdAsync(subId);
 
-            var userSubscription =
-                await _userSubscriptionsService.GetUserSubscriptionByUserIdSubscriptionIdAsync(tokenUserId, subId);
+                if (!subscription.IsActive)
+                {
+                    throw new BadRequestException("Subscription is not active.");
+                }
 
-            if (userSubscription != null || userSubscription.IsActive && userSubscription.EndDate > DateTime.UtcNow)
-            {
-                throw new BadRequestException("User already has this subscription.");
-            }
+                var userSubscription =
+                    await _userSubscriptionsService.GetUserSubscriptionByUserIdSubscriptionIdAsync(tokenUserId, subId);
 
-            var options = new SessionCreateOptions
-            {
-                // Stripe calls the URLs below when certain checkout events happen such as success and failure.
-                SuccessUrl = $"{apiUrl}/checkout/success?sessionId=" + "{CHECKOUT_SESSION_ID}", // Customer paid.
-                CancelUrl = clientUrl + "failed",  // Checkout cancelled.
-                PaymentMethodTypes = new List<string> // Only card available in test mode?
+                bool isActive;
+
+                try
+                {
+                    isActive = userSubscription.IsActive;
+                }
+                catch (NullReferenceException e)
+                {
+                    isActive = false;
+                }
+
+                if (userSubscription != null || isActive.Equals(true))
+                {
+                    throw new BadRequestException("User already has this subscription.");
+                }
+
+                var options = new SessionCreateOptions
+                {
+                    // Stripe calls the URLs below when certain checkout events happen such as success and failure.
+                    SuccessUrl = $"{apiUrl}/checkout/success?sessionId=" + "{CHECKOUT_SESSION_ID}", // Customer paid.
+                    CancelUrl = clientUrl + "failed",  // Checkout cancelled.
+                    PaymentMethodTypes = new List<string> // Only card available in test mode?
                 {
                     "card"
                 },
-                LineItems = new List<SessionLineItemOptions>
+                    LineItems = new List<SessionLineItemOptions>
                 {
                     new()
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount = subscription.Price, // Price is in USD cents.
-                            Currency = "UAH",
+                            Currency = "USD",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Metadata = new Dictionary<string, string>
@@ -125,13 +158,19 @@ namespace User.API.Services
                         Quantity = 1,
                     },
                 },
-                Mode = "payment" // One-time payment. Stripe supports recurring 'subscription' payments.
-            };
+                    Mode = "payment" // One-time payment. Stripe supports recurring 'subscription' payments.
+                };
 
-            var service = new SessionService();
-            var session = await service.CreateAsync(options);
+                var service = new SessionService();
+                var session = await service.CreateAsync(options);
 
-            return session.Id;
+                return session.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task SuccessfulBookCheckoutSessionAsync(int bookId, int userId)
