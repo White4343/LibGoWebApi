@@ -21,6 +21,9 @@ namespace Book.API.Models.Requests.BooksRequests
         [Required]
         public bool IsVisible { get; set; } = true;
 
+        [Required]
+        public bool IsAvailableToBuy { get; set; }
+
         public int[]? CoAuthorIds { get; set; }
     }
 }
